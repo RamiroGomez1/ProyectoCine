@@ -1,0 +1,2 @@
+.app-layout { display: flex; flex-direction: column; min-height: 100vh; background-color: #16213e; color: #ffffff; } 
+.main-content { flex: 1; padding: 1.5rem; }
