@@ -1,0 +1,29 @@
+<div class="home-container">
+  <app-search-bar [(termino)]="filtroBusqueda" />
+
+  <!-- Evaluamos el Signal cargando() expuesto por el servicio de libros -->
+  @if (bookService.cargando()) {
+    <div class="loading-spinner">
+      <p>⏳ Cargando catálogo desde Open Library...</p>
+    </div>
+  } @else {
+    @if (librosFiltrados().length > 0) {
+      <div class="books-grid">
+        @for (libro of librosFiltrados(); track libro.id) {
+          <div class="book-wrapper">
+            <app-book-card [book]="libro" (reservado)="onLibroReservado($event)" />
+            <button class="detail-btn" (click)="verDetalle(libro.id)">
+              🔍 Ver Detalle
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-results">
+        <p>😔 No se encontraron libros para "{{ filtroBusqueda() }}"</p>
+      </div>
+    }
+  }
+
+  <router-outlet />
+</div>

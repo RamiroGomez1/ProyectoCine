@@ -1,0 +1,25 @@
+<div class="card">
+  @if (pelicula().esPreventa) {
+    <span class="badge preventa">Preventa</span>
+  }
+
+  <img [src]="pelicula().imagenUrl" [alt]="pelicula().titulo" class="card-img" />
+
+  <div class="card-body">
+    <div class="card-badges">
+      <span class="badge formato">{{ pelicula().formato }}</span>
+      <span class="badge idioma">{{ pelicula().idioma }}</span>
+      @if (pelicula().clasificacionEdad > 0) {
+        <span class="badge edad">+{{ pelicula().clasificacionEdad }}</span>
+      } @else {
+        <span class="badge edad-atp">ATP</span>
+      }
+    </div>
+
+    <h3 class="card-title">{{ pelicula().titulo }}</h3>
+    <p class="card-genres">{{ pelicula().generos.join(' • ') }}</p>
+    <p class="card-duration">⏱️ {{ pelicula().duracionMinutos }} min</p>
+
+    <a [routerLink]="['/pelicula', pelicula().id]" class="btn-detalle">Ver Funciones</a>
+  </div>
+</div>

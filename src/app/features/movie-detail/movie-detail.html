@@ -1,0 +1,48 @@
+@if (pelicula(); as p) {
+  <div class="pelicula-detalle">
+    <a routerLink="/cartelera">⬅ Volver a Cartelera</a>
+    
+    <div class="pelicula-contenedor">
+      <div class="pelicula-poster">
+      </div>
+      
+      <div class="pelicula-info">
+        <h2>{{ p.titulo }}</h2>
+        
+        <div class="pelicula-badges">
+          <span>{{ p.formato }}</span>
+          <span>{{ p.idioma }}</span>
+          @if (p.clasificacionEdad > 0) {
+            <span>+{{ p.clasificacionEdad }}</span>
+          } @else {
+            <span>ATP</span>
+          }
+        </div>
+        
+        <p><strong>Géneros:</strong> {{ p.generos.join(', ') }}</p>
+        <p><strong>Duración:</strong> {{ p.duracionMinutos }} minutos</p>
+        
+        <h3>Sinopsis</h3>
+        <p>{{ p.sinopsis }}</p>
+        
+        <hr />
+        
+        <h3>🗓️ Seleccioná tu Función</h3>
+        <div class="funciones-lista">
+          @for (f of funciones(); track f.id) {
+          }
+        </div>
+        
+        @if (funcionSeleccionada()) {
+          <div class="funcion-seleccionada-detalle">
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="error-contenedor">
+    <h2>Película no encontrada</h2>
+    <a routerLink="/">Volver al inicio</a>
+  </div>
+}

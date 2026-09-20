@@ -3,9 +3,9 @@
 export interface Funcion {
     id: string;
     peliculaId: string;
-    numeroSala: number;
-    fechaHoraInicio: string;
-    fechaHoraFin: string;
+    sala: string;
+    fechaHoraInicio: Date;
     precioEntrada: number;
-    asientosDisponibles: number;
+    idioma: string;
+    formato: string
 }

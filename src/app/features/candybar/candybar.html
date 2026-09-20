@@ -1,0 +1,39 @@
+<div class="candybar-container">
+  <a [routerLink]="['/reserva', funcionId()]" class="btn-back">⬅ Volver a Selección de Butacas</a>
+  
+  <h2>🍿 Candy Bar</h2>
+  <p class="subtitle">¡Acompañá tu película con los mejores combos y pochoclos!</p>
+
+  <div class="candybar-grid">
+    @for (prod of productos(); track prod.id) {
+      <div class="candy-card">
+        <div class="candy-image">
+          <img [src]="prod.imagenUrl" [alt]="prod.nombre" />
+        </div>
+        
+        <div class="candy-body">
+          <span class="candy-badge">{{ prod.categoria }}</span>
+          <h3>{{ prod.nombre }}</h3>
+          <p class="candy-desc">{{ prod.descripcion }}</p>
+          <p class="candy-price">${{ prod.precio }}</p>
+          
+          <div class="counter-container">
+            <button class="btn-counter" (click)="removerProducto(prod)" [disabled]="(obtenerCantidad(prod) === 0)">-</button>
+            <span class="counter-value">{{ obtenerCantidad(prod) }}</span>
+            <button class="btn-counter" (click)="agregarProducto(prod)">+</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="summary-bar">
+    <div class="summary-info">
+      <p><strong>Items en Candy Bar:</strong> {{ totalItems() }}</p>
+      <p class="subtotal"><strong>Subtotal Candy:</strong> ${{ subtotalCandy() }}</p>
+    </div>
+    <div class="summary-actions">
+      <button class="btn-next" (click)="continuarCompra()">Continuar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<div class="seats-container">
+  <a [routerLink]="['/pelicula', peliculaId()]" class="btn-back">⬅ Volver al Detalle de la Película</a>
+  
+  <h2>🎬 Selección de Butacas</h2>
+  <p class="subtitle">Elegí los lugares donde te querés sentar.</p>
+
+  <div class="legend-container">
+    <div class="legend-item"><span class="seat-sample disponible"></span> Disponible</div>
+    <div class="legend-item"><span class="seat-sample seleccionado"></span> Seleccionado</div>
+    <div class="legend-item"><span class="seat-sample ocupado"></span> Ocupado</div>
+  </div>
+
+  <div class="screen-container">
+    <div class="screen">PANTALLA</div>
+  </div>
+
+  <div class="seats-grid">
+    @for (asiento of mapaAsientos(); track asiento.id) {
+      <button 
+        [class]="'seat ' + (asiento.disponible ? (estaSeleccionado(asiento) ? 'seleccionado' : 'disponible') : 'ocupado')"
+        [disabled]="!asiento.disponible"
+        (click)="seleccionarAsiento(asiento)">
+        {{ asiento.id }}
+      </button>
+    }
+  </div>
+
+  <div class="summary-container">
+    <div class="summary-card">
+      <h3>Resumen de Entradas</h3>
+      <p>
+        <strong>Butacas seleccionadas:</strong> 
+        @if (asientosSeleccionados().length > 0) {
+          <span class="selected-list">
+            @for (a of asientosSeleccionados(); track a.id) {
+              <span class="badge-seat">{{ a.id }}</span>
+            }
+          </span>
+        } @else {
+          <span class="no-selection">Ninguna butaca seleccionada aún</span>
+        }
+      </p>
+      <p class="total-price"><strong>Total:</strong> ${{ precioTotal() }}</p>
+    </div>
+
+    @if (asientosSeleccionados().length > 0) {
+      <div class="action-bar">
+        <button class="btn-confirm" (click)="confirmarReserva()">Confirmar Reserva</button>
+      </div>
+    }
+  </div>
+</div>

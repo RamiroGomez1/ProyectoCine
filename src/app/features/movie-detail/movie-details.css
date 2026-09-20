@@ -1,0 +1,169 @@
+.detail-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.btn-back {
+  display: inline-block;
+  color: #a0a0b0;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.btn-back:hover {
+  color: #e94560;
+}
+
+.detail-content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2.5rem;
+  background-color: #1a1a2e;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .detail-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-poster {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.info-column h2 {
+  font-size: 2.2rem;
+  margin: 0 0 1rem 0;
+  color: #ffffff;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.formato {
+  background-color: #e94560;
+  color: #fff;
+}
+
+.idioma {
+  background-color: #0f3460;
+  color: #fff;
+}
+
+.edad {
+  background-color: #d63031;
+  color: #fff;
+}
+
+.edad-atp {
+  background-color: #00b894;
+  color: #fff;
+}
+
+.synopsis {
+  line-height: 1.6;
+  color: #c5c6c7;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #0f3460;
+  margin: 2rem 0;
+}
+
+.funciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.funcion-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.funcion-card:hover {
+  border-color: #e94560;
+  transform: translateY(-2px);
+}
+
+.funcion-card.selected {
+  border-color: #e94560;
+  background-color: #e94560;
+}
+
+.sala {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.hora {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.detalles {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.precio {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 0.3rem;
+}
+
+.action-bar {
+  margin-top: 2rem;
+  text-align: right;
+}
+
+.btn-confirm {
+  background-color: #00b894;
+  color: #ffffff;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-confirm:hover {
+  background-color: #00a182;
+}
+
+.not-found {
+  text-align: center;
+  padding: 4rem;
+}
