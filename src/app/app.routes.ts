@@ -19,8 +19,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/seat-selection/seat-selection').then(m => m.SeatSelectionComponent) 
   },
   { 
-    path: 'candybar/:funcionId', 
+    path: 'candybar', 
     loadComponent: () => import('./features/candybar/candybar').then(m => m.CandybarComponent) 
+  },
+  { 
+    path: 'resumen', 
+    loadComponent: () => import('./features/resumen/resumen').then(m => m.ResumenComponent) 
   },
   { 
     path: '**', 

@@ -1,0 +1,277 @@
+.resumen-container {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.btn-back {
+  display: inline-block;
+  color: #a0a0b0;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.btn-back:hover {
+  color: #e94560;
+}
+
+.subtitle {
+  color: #a0a0b0;
+  margin-bottom: 2rem;
+}
+
+.resumen-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 2rem;
+}
+
+@media (max-width: 850px) {
+  .resumen-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.details-card {
+  background-color: #1a1a2e;
+  padding: 1.8rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.movie-header {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.movie-thumb {
+  width: 90px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.movie-header h3 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+}
+
+.movie-meta {
+  color: #a0a0b0;
+  font-size: 0.9rem;
+  margin: 0.2rem 0;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #0f3460;
+  margin: 1.5rem 0;
+}
+
+.section-block h4 {
+  color: #e94560;
+  margin: 0 0 0.8rem 0;
+  font-size: 1.1rem;
+}
+
+.items-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: #c5c6c7;
+}
+
+.badge-seat {
+  background-color: #e94560;
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-left: 0.3rem;
+}
+
+.price-text {
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.no-items {
+  color: #777788;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.coupon-block h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.coupon-input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #0f3460;
+  background-color: #16213e;
+  color: #ffffff;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.coupon-input:focus {
+  border-color: #e94560;
+}
+
+.btn-coupon {
+  background-color: #0f3460;
+  color: #ffffff;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-coupon:hover {
+  background-color: #1a5296;
+}
+
+.coupon-msg {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.coupon-msg.success {
+  color: #00b894;
+}
+
+.coupon-msg.error {
+  color: #d63031;
+}
+
+.pricing-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  color: #a0a0b0;
+  font-size: 1rem;
+}
+
+.price-row.discount {
+  color: #00b894;
+  font-weight: 500;
+}
+
+.price-row.total {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #0f3460;
+}
+
+.final-price {
+  color: #00b894;
+}
+
+.ticket-preview-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f2f5 100%);
+  color: #1a1a2e;
+  border-radius: 12px;
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  height: fit-content;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px dashed #cccccc;
+  padding-bottom: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.brand-logo {
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: #e94560;
+}
+
+.ticket-type {
+  font-size: 0.8rem;
+  font-weight: bold;
+  background-color: #1a1a2e;
+  color: #ffffff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.ticket-body h4 {
+  font-size: 1.3rem;
+  margin: 0 0 0.8rem 0;
+  color: #1a1a2e;
+}
+
+.ticket-info {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #444455;
+}
+
+.qr-container {
+  text-align: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.qr-code {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.qr-instructions {
+  font-size: 0.8rem;
+  color: #666677;
+  margin-top: 0.5rem;
+}
+
+.btn-confirm-pay {
+  background-color: #e94560;
+  color: #ffffff;
+  border: none;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.btn-confirm-pay:hover {
+  background-color: #d1334c;
+}

@@ -1,0 +1,98 @@
+<div class="resumen-container">
+  <a [routerLink]="['/candybar', funcionId()]" class="btn-back">⬅ Volver al Candy Bar</a>
+  
+  <h2>🎟️ Resumen de Compra y Confirmación</h2>
+  <p class="subtitle">Revisá el detalle de tu reserva antes de confirmar el pago.</p>
+
+  <div class="resumen-layout">
+    <div class="detalles-compra">
+      <div class="info-funcion">
+        <div>
+          <h3>{{ reservaMock().peliculaTitulo }}</h3>
+          <p>{{ reservaMock().sala }} • {{ reservaMock().formato }} • {{ reservaMock().idioma }}</p>
+          <p>🗓️ {{ reservaMock().fechaHora | date:'medium' }}</p>
+        </div>
+      </div>
+      
+      <hr class="divider" />
+
+      <div class="seccion-entradas">
+        <h4>🎫 Entradas ({{ reservaMock().butacas.length }})</h4>
+        <div class="fila-resumen">
+          <p>
+            Butacas: 
+            @for (b of reservaMock().butacas; track b) {
+              <span class="badge-butaca">{{ b }}</span>
+            }
+          </p>
+          <span class="monto">${{ reservaMock().precioButacas }}</span>
+        </div>
+      </div>
+
+      <div class="seccion-candy">
+        <h4>🍿 Candy Bar</h4>
+        @if (reservaMock().candybarItems.length > 0) {
+          @for (item of reservaMock().candybarItems; track item.nombre) {
+            <div class="fila-resumen">
+              <span>{{ item.cantidad }}x {{ item.nombre }}</span>
+              <span class="monto">${{ item.precioUnitario * item.cantidad }}</span>
+            </div>
+          }
+        } @else {
+          <p class="sin-items">Sin productos de Candy Bar seleccionados.</p>
+        }
+      </div>
+
+      <hr class="divider" />
+
+      <div class="seccion-cupon">
+        <h4>🏷️ ¿Tenés un Cupón de Descuento?</h4>
+        <div class="cupon-input-group">
+          <input type="text" [(ngModel)]="codigoCupon" placeholder="Ingresá tu código" class="input-cupon" />
+          <button (click)="aplicarCupon()" class="btn-cupon">Aplicar</button>
+        </div>
+        @if (mensajeCupones()) {
+          <p class="mensaje-cupon">{{ mensajeCupones() }}</p>
+        }
+      </div>
+
+      <hr class="divider" />
+
+      <div class="totales-box">
+        <div class="total-linea">
+          <span>Subtotal:</span>
+          <span>${{ subtotalGeneral() }}</span>
+        </div>
+        @if (descuentoAplicado() > 0) {
+          <div class="total-linea descuento">
+            <span>Descuento ({{ descuentoAplicado() }}%):</span>
+            <span>-${{ montoDescuento() }}</span>
+          </div>
+        }
+        <div class="total-linea final">
+          <span>Total a Pagar:</span>
+          <span>${{ precioFinal() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticket-digital-container">
+      <div class="ticket-digital">
+        <div class="ticket-header">
+          <span>🎬 CINESTAR</span>
+          <span>Entrada Digital</span>
+        </div>
+        <div class="ticket-body">
+          <h4>{{ reservaMock().peliculaTitulo }}</h4>
+          <p><strong>Sala:</strong> {{ reservaMock().sala }}</p>
+          <p><strong>Butacas:</strong> {{ reservaMock().butacas.join(', ') }}</p>
+          <p><strong>Código:</strong> {{ reservaMock().codigoTicket }}</p>
+          <div class="qr-mock">
+            <div class="qr-code"></div>
+            <p>Mostrá este código QR en la entrada de la sala.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
