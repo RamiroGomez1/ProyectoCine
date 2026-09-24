@@ -1,7 +1,7 @@
 <div class="resumen-container">
   <a [routerLink]="['/candybar', funcionId()]" class="btn-back">⬅ Volver al Candy Bar</a>
   
-  <h2>🎟️ Resumen de Compra y Confirmación</h2>
+  <h2>Resumen de Compra y Confirmación</h2>
   <p class="subtitle">Revisá el detalle de tu reserva antes de confirmar el pago.</p>
 
   <div class="resumen-layout">
@@ -10,14 +10,14 @@
         <div>
           <h3>{{ reservaMock().peliculaTitulo }}</h3>
           <p>{{ reservaMock().sala }} • {{ reservaMock().formato }} • {{ reservaMock().idioma }}</p>
-          <p>🗓️ {{ reservaMock().fechaHora | date:'medium' }}</p>
+          <p>{{ reservaMock().fechaHora | date:'medium' }}</p>
         </div>
       </div>
       
       <hr class="divider" />
 
       <div class="seccion-entradas">
-        <h4>🎫 Entradas ({{ reservaMock().butacas.length }})</h4>
+        <h4>Entradas ({{ reservaMock().butacas.length }})</h4>
         <div class="fila-resumen">
           <p>
             Butacas: 
@@ -30,7 +30,7 @@
       </div>
 
       <div class="seccion-candy">
-        <h4>🍿 Candy Bar</h4>
+        <h4>Candy Bar</h4>
         @if (reservaMock().candybarItems.length > 0) {
           @for (item of reservaMock().candybarItems; track item.nombre) {
             <div class="fila-resumen">
@@ -46,7 +46,7 @@
       <hr class="divider" />
 
       <div class="seccion-cupon">
-        <h4>🏷️ ¿Tenés un Cupón de Descuento?</h4>
+        <h4>¿Tenés un Cupón de Descuento?</h4>
         <div class="cupon-input-group">
           <input type="text" [(ngModel)]="codigoCupon" placeholder="Ingresá tu código" class="input-cupon" />
           <button (click)="aplicarCupon()" class="btn-cupon">Aplicar</button>
@@ -79,7 +79,7 @@
     <div class="ticket-digital-container">
       <div class="ticket-digital">
         <div class="ticket-header">
-          <span>🎬 CINESTAR</span>
+          <span>CINESTAR</span>
           <span>Entrada Digital</span>
         </div>
         <div class="ticket-body">

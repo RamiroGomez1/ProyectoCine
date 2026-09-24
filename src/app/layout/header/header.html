@@ -1,13 +1,10 @@
 <header>
-    <div> 
-        <span>🎬</span> 
-        <h1>Cine</h1> 
-    </div> 
+  <div>
+    <a routerLink="/">🎬 CineStar</a>
+  </div>
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Cartelera</a>
     
-    <nav> 
-        <a>Cartelera</a> 
-        <a>Candy Bar</a> 
-        <a>Mis Películas</a> 
-        <a>Ingresar</a> 
-    </nav> 
+    <a routerLink="/login" routerLinkActive="active">Ingresar</a>
+  </nav>
 </header>

@@ -1,46 +1,58 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router';
-import { Asiento } from '../../core/models/asiento.interface';
+import { Component, OnInit, signal, computed, inject } from '@angular/core'; 
+import { ActivatedRoute, RouterLink, Router } from '@angular/router'; 
+import { Asiento } from '../../core/models/asiento.interface'; 
 
-@Component({
-  selector: 'app-seat-selection',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './seat-selection.html',
-  styleUrl: './seat-selection.css'
-})
-export class SeatSelectionComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+@Component({ 
+  selector: 'app-seat-selection', 
+  standalone: true, 
+  imports: [RouterLink], 
+  templateUrl: './seat-selection.html', 
+  styleUrl: './seat-selection.css' 
+}) 
+export class SeatSelectionComponent implements OnInit { 
+  private route = inject(ActivatedRoute); 
+  private router = inject(Router); 
 
+  peliculaId = signal<string | null>(null);
   funcionId = signal<string | null>(null);
+
   asientos = signal<Asiento[]>([]);
+
   asientosSeleccionados = signal<Asiento[]>([]);
 
-  totalPagar = computed(() => {
-    return this.asientosSeleccionados().reduce((total, asiento) => total + asiento.precio, 0);
+  precioTotal = computed(() => {
+    const PRECIO_ENTRADA = 5000; 
+    return this.asientosSeleccionados().length * PRECIO_ENTRADA;
   });
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('funcionId');
-    this.funcionId.set(id);
-    this.cargarAsientos();
+  ngOnInit() {
+    this.funcionId.set(this.route.snapshot.paramMap.get('funcionId'));
+    this.peliculaId.set(this.route.snapshot.paramMap.get('peliculaId'));
   }
 
-  cargarAsientos(): void {
-    // Aquí cargarías los asientos desde un servicio usando el funcionId()
-  }
+  toggleAsiento(asiento: Asiento) {
+    if (asiento.estado === 'ocupado') return;
 
-  seleccionarAsiento(asiento: Asiento): void {
-    if (asiento.estado !== 'disponible') return;
+    const seleccionActual = this.asientosSeleccionados();
+    const yaSeleccionado = seleccionActual.find(a => a.id === asiento.id);
 
-    this.asientosSeleccionados.update(seleccionados => {
-      const yaSeleccionado = seleccionados.some(a => a.id === asiento.id);
-      if (yaSeleccionado) {
-        return seleccionados.filter(a => a.id !== asiento.id);
-      } else {
-        return [...seleccionados, asiento];
+    if (yaSeleccionado) {
+      this.asientosSeleccionados.set(seleccionActual.filter(a => a.id !== asiento.id));
+    } else {
+      if (seleccionActual.length >= 6) {
+        alert('Podés seleccionar hasta 6 butacas por compra.');
+        return;
       }
-    });
+      this.asientosSeleccionados.set([...seleccionActual, asiento]);
+    }
+  }
+
+  continuar() {
+    if (this.asientosSeleccionados().length === 0) {
+      alert('Por favor, seleccioná al menos un asiento.');
+      return;
+    }
+    
+    this.router.navigate(['/candybar', this.funcionId()]);
   }
 }

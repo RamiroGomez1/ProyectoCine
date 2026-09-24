@@ -1,25 +1,25 @@
-<div class="card">
+<div>
   @if (pelicula().esPreventa) {
-    <span class="badge preventa">Preventa</span>
+    <span>Preventa</span>
   }
 
-  <img [src]="pelicula().imagenUrl" [alt]="pelicula().titulo" class="card-img" />
+  <img [src]="pelicula().portadaUrl" [alt]="pelicula().titulo" style="width: 100%; border-radius: 8px;">
 
-  <div class="card-body">
-    <div class="card-badges">
-      <span class="badge formato">{{ pelicula().formato }}</span>
-      <span class="badge idioma">{{ pelicula().idioma }}</span>
+  <div>
+    <div style="display: flex; gap: 8px; margin-top: 8px;">
+      <span>{{ pelicula().formato }}</span>
+      <span>{{ pelicula().idioma }}</span>
       @if (pelicula().clasificacionEdad > 0) {
-        <span class="badge edad">+{{ pelicula().clasificacionEdad }}</span>
+        <span>+{{ pelicula().clasificacionEdad }}</span>
       } @else {
-        <span class="badge edad-atp">ATP</span>
+        <span>ATP</span>
       }
     </div>
 
-    <h3 class="card-title">{{ pelicula().titulo }}</h3>
-    <p class="card-genres">{{ pelicula().generos.join(' • ') }}</p>
-    <p class="card-duration">⏱️ {{ pelicula().duracionMinutos }} min</p>
+    <h3>{{ pelicula().titulo }}</h3>
+    <p>{{ pelicula().generos.join(' • ') }}</p>
+    <p>{{ pelicula().duracionMinutos }} min</p>
 
-    <a [routerLink]="['/pelicula', pelicula().id]" class="btn-detalle">Ver Funciones</a>
+    <a [routerLink]="['/pelicula', pelicula().id]" style="cursor: pointer; color: blue;">Ver Funciones</a>
   </div>
 </div>

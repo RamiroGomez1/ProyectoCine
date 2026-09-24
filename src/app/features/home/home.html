@@ -1,29 +1,33 @@
-<div class="home-container">
-  <app-search-bar [(termino)]="filtroBusqueda" />
+<div>
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h1>Bienvenidos a CineStar</h1>
+    <p>Elegí tu película favorita, reservá tus butacas y disfrutá del mejor cine.</p>
+  </div>
 
-  <!-- Evaluamos el Signal cargando() expuesto por el servicio de libros -->
-  @if (bookService.cargando()) {
-    <div class="loading-spinner">
-      <p>⏳ Cargando catálogo desde Open Library...</p>
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div>
+      <input type="text" placeholder="Buscar película...">
     </div>
-  } @else {
-    @if (librosFiltrados().length > 0) {
-      <div class="books-grid">
-        @for (libro of librosFiltrados(); track libro.id) {
-          <div class="book-wrapper">
-            <app-book-card [book]="libro" (reservado)="onLibroReservado($event)" />
-            <button class="detail-btn" (click)="verDetalle(libro.id)">
-              🔍 Ver Detalle
-            </button>
-          </div>
-        }
-      </div>
-    } @else {
-      <div class="no-results">
-        <p>😔 No se encontraron libros para "{{ filtroBusqueda() }}"</p>
-      </div>
-    }
-  }
 
-  <router-outlet />
+    <div>
+      <select>
+        <option value="">Todos los géneros</option>
+        @for (g of generosDisponibles; track g) {
+          <option [value]="g">{{ g }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <h3>En Cartelera</h3>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+      @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+        
+        <app-movie-card [pelicula]="pelicula"></app-movie-card>
+
+      }
+    </div>
+  </div>
 </div>
