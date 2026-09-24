@@ -1,0 +1,76 @@
+{
+  "hash": "2a3c7eca",
+  "configHash": "0519d496",
+  "lockfileHash": "f17e1d4e",
+  "browserHash": "0f763309",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "a003611d",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "45a35ee9",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "88b5cadb",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "06c3fbe3",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "27135f9e",
+      "needsInterop": false
+    },
+    "@supabase/supabase-js": {
+      "src": "../../../../../../node_modules/@supabase/supabase-js/dist/index.mjs",
+      "file": "@supabase_supabase-js.js",
+      "fileHash": "c048b229",
+      "needsInterop": false
+    },
+    "zone.js": {
+      "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
+      "file": "zone__js.js",
+      "fileHash": "52dc8e6e",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "asyncToGenerator-BdaQx21n": {
+      "file": "asyncToGenerator-BdaQx21n.js",
+      "isDynamicEntry": false
+    },
+    "common-DGmTS-9E": {
+      "file": "common-DGmTS-9E.js",
+      "isDynamicEntry": false
+    },
+    "core-u973gexO": {
+      "file": "core-u973gexO.js",
+      "isDynamicEntry": false
+    },
+    "createObject-BPx-pjyl": {
+      "file": "createObject-BPx-pjyl.js",
+      "isDynamicEntry": false
+    },
+    "from-BgeG1A2O": {
+      "file": "from-BgeG1A2O.js",
+      "isDynamicEntry": false
+    },
+    "platform-browser-Yz9rpkIo": {
+      "file": "platform-browser-Yz9rpkIo.js",
+      "isDynamicEntry": false
+    }
+  }
+}

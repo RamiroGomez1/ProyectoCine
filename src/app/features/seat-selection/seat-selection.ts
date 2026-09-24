@@ -1,6 +1,10 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core'; 
 import { ActivatedRoute, RouterLink, Router } from '@angular/router'; 
-import { Asiento } from '../../core/models/asiento.interface'; 
+import { Asiento as AsientoBase } from '../../core/models/asiento.interface'; 
+
+export interface Asiento extends AsientoBase {
+  disponible?: boolean;
+}
 
 @Component({ 
   selector: 'app-seat-selection', 
@@ -16,8 +20,7 @@ export class SeatSelectionComponent implements OnInit {
   peliculaId = signal<string | null>(null);
   funcionId = signal<string | null>(null);
 
-  asientos = signal<Asiento[]>([]);
-
+  mapaAsientos = signal<Asiento[]>([]);
   asientosSeleccionados = signal<Asiento[]>([]);
 
   precioTotal = computed(() => {
@@ -28,10 +31,21 @@ export class SeatSelectionComponent implements OnInit {
   ngOnInit() {
     this.funcionId.set(this.route.snapshot.paramMap.get('funcionId'));
     this.peliculaId.set(this.route.snapshot.paramMap.get('peliculaId'));
+    
+    const asientosMapeados: Asiento[] = [
+      // data.map(a => ({ ...a, disponible: a.estado !== 'ocupado' }))
+    ];
+
+    this.mapaAsientos.set(asientosMapeados); 
   }
 
-  toggleAsiento(asiento: Asiento) {
-    if (asiento.estado === 'ocupado') return;
+  estaSeleccionado(asiento: Asiento): boolean {
+    return this.asientosSeleccionados().some(a => a.id === asiento.id);
+  }
+
+  seleccionarAsiento(asiento: Asiento) {
+    const esOcupado = asiento.estado === 'ocupado' || (asiento.disponible === false);
+    if (esOcupado) return;
 
     const seleccionActual = this.asientosSeleccionados();
     const yaSeleccionado = seleccionActual.find(a => a.id === asiento.id);
@@ -47,7 +61,7 @@ export class SeatSelectionComponent implements OnInit {
     }
   }
 
-  continuar() {
+  confirmarReserva() {
     if (this.asientosSeleccionados().length === 0) {
       alert('Por favor, seleccioná al menos un asiento.');
       return;

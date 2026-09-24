@@ -12,6 +12,6 @@ export interface Usuario {
     diasVacaciones: number;
 
     puntosFidelidad: number;
-    salfoFavor: number;
+    saldoFavor: number;
     rol:'cliente' | 'empleado' | 'administrador'
 }
