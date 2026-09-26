@@ -1,72 +1,67 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core'; 
-import { ActivatedRoute, RouterLink, Router } from '@angular/router'; 
-import { Asiento as AsientoBase } from '../../core/models/asiento.interface'; 
+import { Component, signal, computed } from '@angular/core';
 
-export interface Asiento extends AsientoBase {
-  disponible?: boolean;
+export interface Butaca {
+  id: string;
+  fila: string;
+  numero: number;
+  tipo: 'normal' | 'discapacidad' | 'vip';
+  estado: 'libre' | 'ocupada' | 'seleccionada';
 }
 
-@Component({ 
-  selector: 'app-seat-selection', 
-  standalone: true, 
-  imports: [RouterLink], 
-  templateUrl: './seat-selection.html', 
-  styleUrl: './seat-selection.css' 
-}) 
-export class SeatSelectionComponent implements OnInit { 
-  private route = inject(ActivatedRoute); 
-  private router = inject(Router); 
+@Component({
+  selector: 'app-seat-selection',
+  standalone: true,
+  templateUrl: './seat-selection.html',
+  styleUrl: './seat-selection.css'
+})
+export class SeatSelectionComponent {
+  //matriz de butacas
+  sala = signal<Butaca[][]>(this.generarSala());
 
-  peliculaId = signal<string | null>(null);
-  funcionId = signal<string | null>(null);
-
-  mapaAsientos = signal<Asiento[]>([]);
-  asientosSeleccionados = signal<Asiento[]>([]);
-
-  precioTotal = computed(() => {
-    const PRECIO_ENTRADA = 5000; 
-    return this.asientosSeleccionados().length * PRECIO_ENTRADA;
-  });
-
-  ngOnInit() {
-    this.funcionId.set(this.route.snapshot.paramMap.get('funcionId'));
-    this.peliculaId.set(this.route.snapshot.paramMap.get('peliculaId'));
+  generarSala(): Butaca[][] {
+    const filas = ['A','B','C','D','E','F','G','H','I','J-K','L','M','N','O','P','Q','R','S','T'];
+    const distribucionNormal = [4, 20, 4]; 
+    const distribucionDiscapacidad = [2, 10, 2]; // Columnas para fila adaptada
     
-    const asientosMapeados: Asiento[] = [
-      // data.map(a => ({ ...a, disponible: a.estado !== 'ocupado' }))
-    ];
+    let matriz: Butaca[][] = [];
 
-    this.mapaAsientos.set(asientosMapeados); 
-  }
+    filas.forEach(letra => {
+      let filaActual: Butaca[] = [];
+      let numAsiento = 1;
+      
+      // Determinar el tipo de butaca según la letra
+      let tipo: 'normal' | 'discapacidad' | 'vip' = 'normal';
+      let distribucion = distribucionNormal;
 
-  estaSeleccionado(asiento: Asiento): boolean {
-    return this.asientosSeleccionados().some(a => a.id === asiento.id);
-  }
-
-  seleccionarAsiento(asiento: Asiento) {
-    const esOcupado = asiento.estado === 'ocupado' || (asiento.disponible === false);
-    if (esOcupado) return;
-
-    const seleccionActual = this.asientosSeleccionados();
-    const yaSeleccionado = seleccionActual.find(a => a.id === asiento.id);
-
-    if (yaSeleccionado) {
-      this.asientosSeleccionados.set(seleccionActual.filter(a => a.id !== asiento.id));
-    } else {
-      if (seleccionActual.length >= 6) {
-        alert('Podés seleccionar hasta 6 butacas por compra.');
-        return;
+      if (letra === 'J-K') {
+        tipo = 'discapacidad';
+        distribucion = distribucionDiscapacidad; // Fila para personas con discapacidad
+      } else if (['R', 'S', 'T'].includes(letra)) {
+        tipo = 'vip'; // ultimas 3 filas VIP
       }
-      this.asientosSeleccionados.set([...seleccionActual, asiento]);
-    }
+
+      // Generar los bloques de asientos
+      distribucion.forEach(cantidad => {
+        for (let i = 0; i < cantidad; i++) {
+          filaActual.push({
+            id: `${letra}-${numAsiento}`,
+            fila: letra,
+            numero: numAsiento,
+            tipo: tipo,
+            estado: 'libre' 
+          });
+          numAsiento++;
+        }
+      });
+
+      matriz.push(filaActual);
+    });
+
+    return matriz;
   }
 
-  confirmarReserva() {
-    if (this.asientosSeleccionados().length === 0) {
-      alert('Por favor, seleccioná al menos un asiento.');
-      return;
-    }
-    
-    this.router.navigate(['/candybar', this.funcionId()]);
+  seleccionarButaca(butaca: Butaca) {
+    // logica para cambiar el estado de la butaca a seleccionada
+    // integrar Supabase Realtime para bloquearla en tiempo real
   }
 }
