@@ -1,4 +1,11 @@
 {
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
   "dependencies": {
     "@angular/common": "^22.1.6",
     "@angular/compiler": "^22.1.6",
