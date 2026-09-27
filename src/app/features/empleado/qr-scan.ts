@@ -6,8 +6,8 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
-  templateUrl: './qr-scanner.html',
-  styleUrl: './qr-scanner.css'
+  templateUrl: './qr-scan.html',
+  styleUrl: './qr-scan.css'
 })
 export class QrScannerComponent {
   private supabase = inject(SupabaseService).client;

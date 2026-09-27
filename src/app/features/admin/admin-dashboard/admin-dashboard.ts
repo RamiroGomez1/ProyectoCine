@@ -1,9 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ReportesService } from '../../../core/services/reportes.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
+  imports: [DatePipe],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })

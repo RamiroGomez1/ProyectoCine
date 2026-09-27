@@ -21,7 +21,9 @@ export class RegisterComponent {
 
   registerForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    nombre: ['', [Validators.required, Validators.minLength(6)]],
+    apellido: ['', [Validators.required, Validators.minLength(6)]]
   });
 
   async registrar() {
@@ -31,16 +33,14 @@ export class RegisterComponent {
     this.cargando.set(true);
     this.mensajeError.set(null);
 
-    const { email, password } = this.registerForm.getRawValue();
+    const { email, password, nombre, apellido } = this.registerForm.getRawValue();
 
     try {
-      const { data, error } = await this.authService.signUp(email, password);
+      const { data, error } = await this.authService.signUp(email, password, nombre, apellido);
 
       if (error) {
         this.mensajeError.set(error.message);
       } else {
-        // Si el registro es exitoso, redirigir al usuario (ej. inicio o login)
-        // Nota: Supabase puede requerir confirmación por email dependiendo de tu configuración
         this.router.navigate(['/']); 
       }
     } catch (err) {
