@@ -1,47 +1,57 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+// Path: [Notebook sources]/src/app/features/movie-detail/movie-detail.ts
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PeliculasService } from '../../core/services/pelicula.service';
+import { ResenasService } from '../../core/services/resenas.service';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [RouterLink],
   templateUrl: './movie-detail.html',
   styleUrl: './movie-detail.css'
 })
 export class MovieDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  
-  movie臨Id = signal<string | null>(null);
+  private router = inject(Router);
+  private peliculaService = inject(PeliculasService);
+  private resenasService = inject(ResenasService);
 
-  pelicula = signal<any>({
-    titulo: 'Cargando película...',
-    sinopsis: 'Cargando sinopsis de la película seleccionada.',
-    genero: 'Acción / Aventura',
-    duracion: '120 min',
-    imagenUrl: 'assets/movie-placeholder.png'
+  // Signals para el estado reactivo[cite: 8]
+  pelicula = signal<any>(null);
+  promedioResenas = signal<number>(0);
+  cargando = signal(true);
+
+  // Computed Signal para determinar si aplica precio de preventa (7 días antes)[cite: 8]
+  enPreventa = computed(() => {
+    const peli = this.pelicula();
+    if (!peli || !peli.fecha_estreno) return false;
+    
+    const hoy = new Date();
+    const estreno = new Date(peli.fecha_estreno);
+    const diffDias = (estreno.getTime() - hoy.getTime()) / (1000 * 3600 * 24);
+    
+    // Si faltan entre 0 y 7 días para el estreno, es preventa
+    return diffDias > 0 && diffDias <= 7;
   });
 
-  funciones = signal<any[]>([
-    { id: 'f1', hora: '14:30', sala: 'Sala 1', formato: '2D' },
-    { id: 'f2', hora: '17:15', sala: 'Sala 3', formato: '3D' },
-    { id: 'f3', hora: '20:00', sala: 'Sala 1', formato: '2D' }
-  ]);
+  async ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      try {
+        const data = await this.peliculaService.obtenerPeliculaPorId(id);
+        this.pelicula.set(data);
 
-  funcionSeleccionada = signal<any>(null);
-
-  ngOnInit() {
-    this.movie臨Id.set(this.route.snapshot.paramMap.get('id'));
-    
-    this.pelicula.set({
-      titulo: 'Deadpool & Wolverine',
-      sinopsis: 'Un apático Wade Wilson se afana en la vida civil tras dejar atrás sus días como el mercenario Deadpool. Pero cuando su mundo natal se enfrenta a una amenaza existencial, Wade debe volver a ponerse el traje.',
-      genero: 'Acción / Comedia',
-      duracion: '127 min',
-      imagenUrl: 'assets/deadpool-wolverine.png'
-    });
+        const promedio = await this.resenasService.obtenerPromedioPelicula(id);
+        this.promedioResenas.set(promedio);
+      } catch (error) {
+        console.error("Error al cargar la película", error);
+      } finally {
+        this.cargando.set(false);
+      }
+    }
   }
 
-  seleccionarFuncion(funcion: any): void {
-    this.funcionSeleccionada.set(funcion);
+  continuarCompra() {
+    this.router.navigate(['/seat-selection', this.pelicula().id]);
   }
 }

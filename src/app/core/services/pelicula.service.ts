@@ -49,4 +49,22 @@ export class PeliculasService {
       return null;
     }
   }
+
+  async obtenerPeliculas() {
+    const { data, error } = await this.supabase.from('peliculas').select('*');
+    if (error) throw error;
+    return data;
+  }
+
+  async obtenerTop3Vendidas() {
+    const { data, error } = await this.supabase
+      .from('peliculas')
+      .select('*')
+      .order('entradas_vendidas', { ascending: false })
+      .limit(3);
+
+    if (error) throw error;
+    return data;
+  }
+
 }

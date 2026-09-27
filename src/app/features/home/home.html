@@ -1,33 +1,53 @@
-<div>
-  <div style="text-align: center; margin-bottom: 2rem;">
-    <h1>Bienvenidos a CineStar</h1>
-    <p>Elegí tu película favorita, reservá tus butacas y disfrutá del mejor cine.</p>
-  </div>
-
-  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
-    <div>
-      <input type="text" placeholder="Buscar película...">
-    </div>
-
-    <div>
-      <select>
-        <option value="">Todos los géneros</option>
-        @for (g of generosDisponibles; track g) {
-          <option [value]="g">{{ g }}</option>
+<div class="home-container">
+  @if (cargando()) {
+    <div class="loading-state">Cargando cartelera...</div>
+  } @else {
+    
+    <section class="top3-section">
+      <h2>Top 3 Películas Más Vendidas</h2>
+      <div class="movies-grid top3-grid">
+        @for (peli of top3Vendidas(); track peli.id) {
+          <div class="movie-card highlight-card">
+            <img [src]="peli.imagen" alt="Portada de {{ peli.nombre }}">
+            <div class="card-content">
+              <h3>{{ peli.nombre }}</h3>
+              <a [routerLink]="['/movie-detail', peli.id]" class="btn-primary">Ver Detalles</a>
+            </div>
+          </div>
         }
-      </select>
-    </div>
-  </div>
+      </div>
+    </section>
 
-  <div>
-    <h3>En Cartelera</h3>
+    <section class="search-section">
+      <h2>Toda la Cartelera</h2>
+      <div class="search-bar">
+        <input 
+          type="text" 
+          placeholder="🔍 Buscar por género (ej. Acción, Comedia, Terror...)" 
+          [(ngModel)]="filtroGenero"
+          class="search-input"
+        >
+      </div>
+    </section>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-      @for (pelicula of peliculasFiltradas(); track pelicula.id) {
-        
-        <app-movie-card [pelicula]="pelicula"></app-movie-card>
+    <section class="all-movies-section">
+      <div class="movies-grid">
+        @for (peli of peliculasFiltradas(); track peli.id) {
+          <div class="movie-card">
+            <img [src]="peli.imagen" alt="Portada de {{ peli.nombre }}">
+            <div class="card-content">
+              <h3>{{ peli.nombre }}</h3>
+              <p class="generos">{{ peli.generos.join(', ') }}</p>
+              <a [routerLink]="['/movie-detail', peli.id]" class="btn-secondary">Ver Detalles</a>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <p>No tenemos películas en cartelera para el género "{{ filtroGenero() }}".</p>
+          </div>
+        }
+      </div>
+    </section>
 
-      }
-    </div>
-  </div>
+  }
 </div>

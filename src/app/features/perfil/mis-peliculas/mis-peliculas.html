@@ -1,0 +1,36 @@
+<div class="historial-container">
+  <h2>Mis Películas Vistas</h2>
+
+  @if (cargando()) {
+    <p>Cargando tu historial...</p>
+  } @else {
+    <div class="peliculas-grid">
+      @for (peli of historial(); track peli.pelicula_id) {
+        <div class="pelicula-card">
+          <img [src]="peli.portadaUrl" alt="Portada de {{ peli.titulo }}">
+          <h3>{{ peli.titulo }}</h3>
+          <p>Vista el: {{ peli.fecha_funcion }}</p>
+          
+          <button (click)="abrirResena(peli.pelicula_id)">Calificar Película</button>
+        </div>
+      } @empty {
+        <p>Todavía no fuiste a ver ninguna película. ¡Revisá la cartelera!</p>
+      }
+    </div>
+  }
+
+  @if (peliculaSeleccionada()) {
+    <div class="resena-modal">
+      <h3>Dejar Reseña</h3>
+      
+      <label>Estrellas (1 al 5):</label>
+      <input type="number" min="1" max="5" [(ngModel)]="estrellasSeleccionadas">
+      
+      <label>Comentario corto:</label>
+      <textarea [(ngModel)]="comentario" maxlength="150" placeholder="¿Qué te pareció?"></textarea>
+      
+      <button (click)="enviarResena()">Enviar</button>
+      <button (click)="peliculaSeleccionada.set(null)">Cancelar</button>
+    </div>
+  }
+</div>

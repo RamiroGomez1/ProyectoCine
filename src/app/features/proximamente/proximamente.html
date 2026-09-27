@@ -1,0 +1,35 @@
+<div class="proximamente-container">
+  <h1>Próximos Estrenos</h1>
+  <p class="subtitle">Activá las alertas para enterarte primero cuando arranque la preventa.</p>
+
+  @if (cargando()) {
+    <div class="loading">Cargando próximos estrenos...</div>
+  } @else {
+    <div class="movies-grid">
+      @for (peli of peliculasFuturas(); track peli.id) {
+        <div class="movie-card">
+          <img [src]="peli.imagen" alt="Portada de {{ peli.nombre }}">
+          <div class="card-content">
+            <h3>{{ peli.nombre }}</h3>
+            <p class="fecha-estreno">Estreno: {{ peli.fecha_estreno }}</p>
+            <p class="sinopsis-corta">{{ peli.sinopsis }}</p>
+            
+            @if (tieneAlerta(peli.id)) {
+              <button class="btn-alerta-activa" disabled>
+                ✅ Alerta Activada
+              </button>
+            } @else {
+              <button class="btn-alerta" (click)="suscribirse(peli.id)">
+                🔔 Activar Alerta
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>No hay estrenos programados por el momento. ¡Revisá la cartelera actual!</p>
+        </div>
+      }
+    </div>
+  }
+</div>

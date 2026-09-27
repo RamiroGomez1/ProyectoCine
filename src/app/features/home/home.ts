@@ -1,37 +1,47 @@
-import { Component, signal, computed } from '@angular/core'; 
-import { FormsModule } from '@angular/forms'; 
-import { Pelicula } from '../../core/models/pelicula.interface'; 
-import { MovieCardComponent } from '../../shared/movie-card'; 
-import { PeliculasService } from '../../core/services/pelicula.service'; 
+// Path: [Notebook sources]/src/app/features/home/home.ts
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { PeliculasService } from '../../core/services/pelicula.service';
 
-@Component({ 
-  selector: 'app-home', 
-  standalone: true, 
-  imports: [FormsModule, MovieCardComponent], 
-  templateUrl: './home.html', 
-  styleUrl: './home.css' 
-}) 
-export class HomeComponent { 
-  constructor(private peliculasService: PeliculasService) {}
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [FormsModule, RouterLink], // Necesarios para el input y la navegación
+  templateUrl: './home.html',
+  styleUrl: './home.css'
+})
+export class HomeComponent implements OnInit {
+  private peliculaService = inject(PeliculasService);
 
-  busqueda = signal<string>('');
+  peliculas = signal<any[]>([]);
+  top3Vendidas = signal<any[]>([]);
+  cargando = signal(true);
   
-  generoSeleccionado = signal<string>('');
-
-  generosDisponibles = ['Acción', 'Aventura', 'Comedia', 'Drama', 'Ciencia Ficción', 'Terror', 'Animación'];
-
-  peliculas = signal<Pelicula[]>([]);
+  filtroGenero = signal<string>('');
 
   peliculasFiltradas = computed(() => {
-    const texto = this.busqueda().toLowerCase().trim();
-    const genero = this.generoSeleccionado();
+    const busqueda = this.filtroGenero().toLowerCase().trim();
+    if (!busqueda) return this.peliculas();
 
-    return this.peliculasService.peliculas().filter(pelicula => {
-      const coincideTexto = pelicula.titulo.toLowerCase().includes(texto);
-      
-      const coincideGenero = genero === '' || pelicula.generos.includes(genero);
-
-      return coincideTexto && coincideGenero;
-    });
+    return this.peliculas().filter(peli =>
+      peli.generos.some((g: string) => g.toLowerCase().includes(busqueda))
+    );
   });
+
+  async ngOnInit() {
+    try {
+      const [top3, todas] = await Promise.all([
+        this.peliculaService.obtenerTop3Vendidas(),
+        this.peliculaService.obtenerPeliculas()
+      ]);
+
+      this.top3Vendidas.set(top3);
+      this.peliculas.set(todas);
+    } catch (error) {
+      console.error("Error cargando la cartelera", error);
+    } finally {
+      this.cargando.set(false);
+    }
+  }
 }

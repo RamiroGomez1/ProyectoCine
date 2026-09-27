@@ -1,0 +1,60 @@
+<div class="admin-container">
+  <h1>Panel de Control Administrativo</h1>
+
+  @if (cargando()) {
+    <p>Cargando métricas del sistema...</p>
+  } @else {
+    <section class="acciones-section">
+      <h2>Reportes de Facturación</h2>
+      <button (click)="exportarPDF()" class="btn-pdf">📄 Exportar a PDF</button>
+      <button (click)="exportarExcel()" class="btn-excel">📊 Exportar a Excel</button>
+    </section>
+
+    <div class="metricas-grid">
+      <section class="card">
+        <h2>Top 5 Películas</h2>
+        <ul>
+          @for (peli of topPeliculas(); track peli.nombre) {
+            <li><strong>{{ peli.nombre }}</strong>: {{ peli.entradas_vendidas }} entradas</li>
+          }
+        </ul>
+      </section>
+
+      <section class="card highlight">
+        <h2>Producto Candy Más Vendido</h2>
+        @if (topCandy()) {
+          <div class="candy-stats">
+            <h3>{{ topCandy().nombre }}</h3>
+            <p>{{ topCandy().cantidad_vendida }} unidades vendidas</p>
+          </div>
+        }
+      </section>
+    </div>
+
+    <section class="log-section">
+      <h2>Log de Actividad del Sistema</h2>
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log.id) {
+            <tr>
+              <td>{{ log.fecha_hora | date:'short' }}</td>
+              <td>{{ log.perfiles?.nombre }} {{ log.perfiles?.apellido }}</td>
+              <td><span class="badge">{{ log.tipo_accion }}</span></td>
+              <td>{{ log.detalle }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4">No hay actividad registrada.</td></tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+</div>

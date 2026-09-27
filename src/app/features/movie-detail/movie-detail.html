@@ -1,48 +1,44 @@
-@if (pelicula(); as p) {
-  <div class="pelicula-detalle">
-    <a routerLink="/cartelera">⬅ Volver a Cartelera</a>
-    
-    <div class="pelicula-contenedor">
-      <div class="pelicula-poster">
-      </div>
+<div class="detail-container">
+  @if (cargando()) {
+    <p>Cargando detalles de la película...</p>
+  } @else if (pelicula()) {
+    <div class="detail-card">
+      <img [src]="pelicula().imagen" alt="Portada de {{ pelicula().nombre }}" class="detail-cover">
       
-      <div class="pelicula-info">
-        <h2>{{ p.titulo }}</h2>
+      <div class="detail-info">
+        <h1>{{ pelicula().nombre }}</h1>
         
-        <div class="pelicula-badges">
-          <span>{{ p.formato }}</span>
-          <span>{{ p.idioma }}</span>
-          @if (p.clasificacionEdad > 0) {
-            <span>+{{ p.clasificacionEdad }}</span>
-          } @else {
-            <span>ATP</span>
-          }
+        <div class="rating">
+          ⭐ {{ promedioResenas() }} / 5.0
+        </div>
+
+        <p class="synopsis">{{ pelicula().sinopsis }}</p>
+        
+        <div class="tech-specs">
+          <p><strong>Duración:</strong> {{ pelicula().duracion }} minutos</p>
+          <p><strong>Formatos:</strong> {{ pelicula().formato }}</p>
+          <p><strong>Idioma:</strong> {{ pelicula().idioma }}</p>
         </div>
         
-        <p><strong>Géneros:</strong> {{ p.generos.join(', ') }}</p>
-        <p><strong>Duración:</strong> {{ p.duracionMinutos }} minutos</p>
-        
-        <h3>Sinopsis</h3>
-        <p>{{ p.sinopsis }}</p>
-        
-        <hr />
-        
-        <h3>🗓️ Seleccioná tu Función</h3>
-        <div class="funciones-lista">
-          @for (f of funciones(); track f.id) {
-          }
-        </div>
-        
-        @if (funcionSeleccionada()) {
-          <div class="funcion-seleccionada-detalle">
+        @if (pelicula().restriccion === '+13' || pelicula().restriccion === '+18') {
+          <div class="alerta-edad">
+            Película con restricción {{ pelicula().restriccion }}. Todo menor debe ir acompañado por un adulto.
           </div>
         }
+
+        <div class="precio-section">
+          @if (enPreventa()) {
+            <span class="badge-preventa">¡Precio Especial de Preventa!</span>
+            <h2>${{ pelicula().precio_preventa }}</h2>
+          } @else {
+            <h2>${{ pelicula().precio_normal }}</h2>
+          }
+        </div>
+
+        <button class="comprar-btn" (click)="continuarCompra()">Seleccionar Butacas</button>
       </div>
     </div>
-  </div>
-} @else {
-  <div class="error-contenedor">
-    <h2>Película no encontrada</h2>
-    <a routerLink="/">Volver al inicio</a>
-  </div>
-}
+  } @else {
+    <div class="not-found">No pudimos encontrar la película seleccionada.</div>
+  }
+</div>
