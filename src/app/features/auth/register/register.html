@@ -3,14 +3,30 @@
     <h2>Registro de Cliente</h2>
     <p class="subtitle">Completá tus datos para obtener un 20% de descuento en tu primera compra.</p>
 
-    @if (mensajeError()) {
-      <div class="error-msg" style="margin-bottom: 1rem;">
-        {{ mensajeError() }}
+    @if (successMessage()) {
+      <div class="success-msg" style="margin-bottom: 1rem;">
+        {{ successMessage() }}
       </div>
     }
 
-    <form [formGroup]="registerForm" (ngSubmit)="registrar()">
+    @if (errorMessage()) {
+      <div class="error-msg" style="margin-bottom: 1rem;">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
+      </div>
+
+      <div class="form-group">
+        <label for="apellido">Apellido</label>
+        <input id="apellido" type="text" formControlName="apellido" placeholder="Tu apellido">
+      </div>
+
       <div class="form-group">
         <label for="email">Correo electrónico</label>
         <input 
@@ -20,7 +36,7 @@
           placeholder="ejemplo@correo.com"
         >
         @if (registerForm.controls.email.invalid && registerForm.controls.email.touched) {
-          <small class="error-msg" style="display: block; text-align: left; margin-top: 0.3rem;">
+          <small style="color: #d9534f; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
             Ingresá un correo electrónico válido.
           </small>
         }
@@ -35,17 +51,17 @@
           placeholder="Mínimo 6 caracteres"
         >
         @if (registerForm.controls.password.invalid && registerForm.controls.password.touched) {
-          <small class="error-msg" style="display: block; text-align: left; margin-top: 0.3rem;">
+          <small style="color: #d9534f; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
             La contraseña debe tener al menos 6 caracteres.
           </small>
         }
       </div>
 
-      <button type="submit" class="btn-submit" [disabled]="registerForm.invalid || cargando()">
-        @if (cargando()) {
+      <button type="submit" class="btn-submit" [disabled]="registerForm.invalid || isLoading()">
+        @if (isLoading()) {
           Registrando...
         } @else {
-          Registrarme
+          Registrarse
         }
       </button>
 

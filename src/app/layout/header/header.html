@@ -1,10 +1,12 @@
-<header>
-  <div>
-    <a routerLink="/">🎬 CineStar</a>
-  </div>
-  <nav>
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Cartelera</a>
-    
-    <a routerLink="/login" routerLinkActive="active">Ingresar</a>
+<!-- src/app/layout/header/header.html -->
+<header class="header">
+  <a routerLink="/" class="logo-container">
+    <span class="logo-text">PROYECTO CINE</span>
+  </a>
+  
+  <nav class="nav-menu">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Películas por Cine</a>
+    <a routerLink="/candybar" routerLinkActive="active">Candy</a>
+    <a routerLink="/login" routerLinkActive="active" class="btn-login">Ingresar</a>
   </nav>
 </header>

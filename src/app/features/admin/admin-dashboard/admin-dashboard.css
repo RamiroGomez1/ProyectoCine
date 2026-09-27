@@ -1,0 +1,169 @@
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  color: #ffffff;
+}
+
+.admin-container h1 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  border-left: 4px solid #e50914;
+  padding-left: 0.8rem;
+}
+
+.acciones-section {
+  background-color: #161625;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  border: 1px solid #22223b;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.acciones-section h2 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #b3b3b3;
+  margin-right: 1rem;
+}
+
+.btn-pdf, .btn-excel {
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-pdf {
+  background-color: #e50914;
+  color: #ffffff;
+}
+
+.btn-pdf:hover {
+  background-color: #f6121d;
+}
+
+.btn-excel {
+  background-color: #00b894;
+  color: #ffffff;
+}
+
+.btn-excel:hover {
+  background-color: #00a182;
+}
+
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.card {
+  background-color: #161625;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #22223b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card h2 {
+  font-size: 1.3rem;
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  color: #ffffff;
+  border-bottom: 1px solid #22223b;
+  padding-bottom: 0.6rem;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #1f1f33;
+  color: #b3b3b3;
+  font-size: 0.95rem;
+}
+
+.card li strong {
+  color: #ffffff;
+}
+
+.card li:last-child {
+  border-bottom: none;
+}
+
+.candy-stats h3 {
+  font-size: 1.4rem;
+  color: #00b894;
+  margin: 0 0 0.5rem 0;
+}
+
+.candy-stats p {
+  color: #8c8c9e;
+  margin: 0;
+}
+
+.log-section {
+  background-color: #161625;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #22223b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.log-section h2 {
+  font-size: 1.3rem;
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  color: #ffffff;
+  border-bottom: 1px solid #22223b;
+  padding-bottom: 0.6rem;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.log-table th {
+  color: #8c8c9e;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  padding: 0.8rem;
+  border-bottom: 1px solid #22223b;
+}
+
+.log-table td {
+  padding: 0.9rem 0.8rem;
+  border-bottom: 1px solid #1f1f33;
+  color: #b3b3b3;
+  font-size: 0.9rem;
+}
+
+.log-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.02);
+  color: #ffffff;
+}
+
+.badge {
+  background-color: #22223b;
+  color: #ffffff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}

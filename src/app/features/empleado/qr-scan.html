@@ -1,1 +1,22 @@
-<h1>Escaner QR</h1>
+<div class="scanner-container">
+  <h1>Validación de Accesos y Candy Bar</h1>
+  <p class="subtitle">Escaneá el código QR del ticket o ingresalo manualmente
+    para validar la entrada o el producto.</p>
+
+  <div class="input-manual-group">
+    <input
+      type="text"
+      [value]="codigoManual()"
+      (input)="codigoManual.set($any($event.target).value)"
+      placeholder="Ingresar código QR / Hash...">
+    <button (click)="procesarCodigo(codigoManual())">Validar</button>
+  </div>
+
+  @if (mensajeValidacion()) {
+  <div class="mensaje-validacion"
+    [class.ex]="mensajeValidacion()?.tipo === 'exito'"
+    [class.error]="mensajeValidacion()?.tipo === 'error'">
+    {{ mensajeValidacion()?.texto }}
+  </div>
+  }
+</div>

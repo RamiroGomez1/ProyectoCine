@@ -14,6 +14,45 @@ export class PeliculasService {
   public peliculas = this.peliculasSignal.asReadonly();
   public cargando = this.cargandoSignal.asReadonly();
 
+  async agregarPelicula(nuevaPelicula: Omit<Pelicula, 'id'>, imagenFile?: File): Promise<void> {
+    let portadaUrl = nuevaPelicula.portadaUrl;
+
+    if (imagenFile) {
+      const nombreArchivo = `${Date.now()}_${imagenFile.name}`;
+      const { error: uploadError } = await this.supabase.storage
+        .from('peliculas')
+        .upload(nombreArchivo, imagenFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = this.supabase.storage
+        .from('peliculas')
+        .getPublicUrl(nombreArchivo);
+
+      portadaUrl = urlData.publicUrl;
+    }
+
+    const { error } = await this.supabase
+      .from('peliculas')
+      .insert({
+        titulo: nuevaPelicula.titulo,
+        sinopsis: nuevaPelicula.sinopsis,
+        duracionMinutos: nuevaPelicula.duracionMinutos,
+        portadaUrl: portadaUrl,
+        generos: nuevaPelicula.generos,
+        formato: nuevaPelicula.formato,
+        idioma: nuevaPelicula.idioma,
+        clasificacionEdad: nuevaPelicula.clasificacionEdad,
+        precioBase: nuevaPelicula.precioBase,
+        esPreventa: nuevaPelicula.esPreventa ?? false
+      });
+
+    if (error) {
+      console.error('Error al insertar la película:', error.message);
+      throw error;
+    }
+  }
+
   async cargarPeliculas(): Promise<void> {
     this.cargandoSignal.set(true);
     try {

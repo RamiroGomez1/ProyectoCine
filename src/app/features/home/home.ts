@@ -1,4 +1,3 @@
-// Path: [Notebook sources]/src/app/features/home/home.ts
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';

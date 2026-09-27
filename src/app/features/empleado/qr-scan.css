@@ -1,0 +1,77 @@
+.scanner-container, .empleado-container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background-color: #161625;
+  border-radius: 12px;
+  border: 1px solid #22223b;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  text-align: center;
+}
+
+.scanner-container h1, .empleado-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-bottom: 1px solid #22223b;
+  padding-bottom: 0.8rem;
+}
+
+.input-manual-group {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-manual-group input {
+  flex: 1;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #22223b;
+  background-color: #12121e;
+  color: #ffffff;
+  outline: none;
+  font-size: 1rem;
+}
+
+.input-manual-group input:focus {
+  border-color: #e50914;
+}
+
+.input-manual-group button {
+  background-color: #e50914;
+  color: #ffffff;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.input-manual-group button:hover {
+  background-color: #f6121d;
+}
+
+.mensaje-validacion {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.mensaje-validacion.exito {
+  background-color: rgba(0, 184, 148, 0.1);
+  border: 1px solid rgba(0, 184, 148, 0.3);
+  color: #00b894;
+}
+
+.mensaje-validacion.error {
+  background-color: rgba(229, 9, 20, 0.1);
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  color: #e50914;
+}

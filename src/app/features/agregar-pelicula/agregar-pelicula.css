@@ -1,0 +1,113 @@
+.admin-container {
+  max-width: 700px;
+  margin: 2.5rem auto;
+  padding: 2.5rem;
+  background-color: #161625;
+  border-radius: 12px;
+  border: 1px solid #22223b;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+
+.admin-container h2 {
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  border-left: 4px solid #e50914;
+  padding-left: 0.8rem;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #b3b3b3;
+  margin-bottom: 0.4rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #22223b;
+  background-color: #12121e;
+  color: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #e50914;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem 0;
+  color: #8c8c9e;
+  font-size: 0.9rem;
+}
+
+.preview-container {
+  margin: 1.5rem 0;
+  text-align: center;
+  background-color: #12121e;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #22223b;
+}
+
+.preview-container p {
+  color: #8c8c9e;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.preview-container img {
+  max-width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+  background-color: #e50914;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #f6121d;
+}
+
+.btn-submit:disabled {
+  background-color: #2b2b3d;
+  color: #6c6c80;
+  cursor: not-allowed;
+  box-shadow: none;
+}

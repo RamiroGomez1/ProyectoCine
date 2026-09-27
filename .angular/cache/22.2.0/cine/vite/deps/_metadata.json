@@ -1,0 +1,76 @@
+{
+  "hash": "59ebaace",
+  "configHash": "0519d496",
+  "lockfileHash": "3c7de587",
+  "browserHash": "b0dc126b",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "18066215",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "71ce6e71",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "dae34257",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "8e4788cc",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "2cce1a06",
+      "needsInterop": false
+    },
+    "@supabase/supabase-js": {
+      "src": "../../../../../../node_modules/@supabase/supabase-js/dist/index.mjs",
+      "file": "@supabase_supabase-js.js",
+      "fileHash": "06afa293",
+      "needsInterop": false
+    },
+    "zone.js": {
+      "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
+      "file": "zone__js.js",
+      "fileHash": "3ff5b19b",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "asyncToGenerator-B11HDKsh": {
+      "file": "asyncToGenerator-B11HDKsh.js",
+      "isDynamicEntry": false
+    },
+    "common-BUehiYGx": {
+      "file": "common-BUehiYGx.js",
+      "isDynamicEntry": false
+    },
+    "core-BWiAPeio": {
+      "file": "core-BWiAPeio.js",
+      "isDynamicEntry": false
+    },
+    "createObject-C50WM9Ui": {
+      "file": "createObject-C50WM9Ui.js",
+      "isDynamicEntry": false
+    },
+    "from-DC9it4Dz": {
+      "file": "from-DC9it4Dz.js",
+      "isDynamicEntry": false
+    },
+    "platform-browser-DIvW03Gt": {
+      "file": "platform-browser-DIvW03Gt.js",
+      "isDynamicEntry": false
+    }
+  }
+}

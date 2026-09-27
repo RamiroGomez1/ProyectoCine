@@ -15,38 +15,40 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Señal para manejar el estado de la vista
-  cargando = signal(false);
-  mensajeError = signal<string | null>(null);
-
-  registerForm = this.fb.nonNullable.group({
+  registerForm = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(2)]],
+    apellido: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    nombre: ['', [Validators.required, Validators.minLength(6)]],
-    apellido: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
-  async registrar() {
-    // Si el formulario es inválido, no hacemos nada
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
+  successMessage = signal<string | null>(null);
+
+  async onSubmit() {
     if (this.registerForm.invalid) return;
 
-    this.cargando.set(true);
-    this.mensajeError.set(null);
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
 
-    const { email, password, nombre, apellido } = this.registerForm.getRawValue();
+    const { nombre, apellido, email, password } = this.registerForm.value;
 
     try {
-      const { data, error } = await this.authService.signUp(email, password, nombre, apellido);
-
-      if (error) {
-        this.mensajeError.set(error.message);
-      } else {
-        this.router.navigate(['/']); 
+      const { data, error } = await this.authService.signUp(email!, password!, nombre!, apellido!);
+      if (error) throw error;
+      
+      if (data.user?.identities?.length === 0) {
+        this.errorMessage.set('Este email ya está registrado.');
+      } else if (data.user) {
+        this.successMessage.set('¡Registro exitoso! Por favor verifica tu email o inicia sesión.');
+        this.registerForm.reset();
       }
-    } catch (err) {
-      this.mensajeError.set('Ocurrió un error inesperado durante el registro.');
+    } catch (error: any) {
+      this.errorMessage.set(error.message || 'Error al registrarse');
     } finally {
-      this.cargando.set(false);
+      this.isLoading.set(false);
     }
   }
 }
