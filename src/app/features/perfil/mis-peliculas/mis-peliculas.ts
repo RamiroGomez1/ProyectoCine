@@ -48,8 +48,8 @@ export class MisPeliculasComponent implements OnInit {
     if (user && peliculaId) {
       await this.resenasService.agregarResena({
         pelicula_id: peliculaId,
-        usuario_id: user.id,
-        estrellas: this.estrellasSeleccionadas(),
+        user_id: user.id,
+        puntuacion: this.estrellasSeleccionadas(),
         comentario: this.comentario()
       });
       

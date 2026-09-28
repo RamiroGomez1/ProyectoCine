@@ -45,4 +45,29 @@ export class ResenasService {
 
     return data;
   }
+
+  async obtenerPromedioPelicula(peliculaId: string): Promise<number> {
+    const { data, error } = await this.supabase
+      .from('resenas')
+      .select('puntuacion')
+      .eq('pelicula_id', peliculaId);
+
+    if (error || !data || data.length === 0) return 0;
+    const suma = data.reduce((acc, curr) => acc + curr.puntuacion, 0);
+    return Number((suma / data.length).toFixed(1));
+  }
+
+  async obtenerHistorialUsuario(userId: string) {
+    const { data, error } = await this.supabase
+      .from('resenas')
+      .select('*, peliculas(*)')
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error al obtener historial:', error.message);
+      return [];
+    }
+    return data;
+  }
+
 }
