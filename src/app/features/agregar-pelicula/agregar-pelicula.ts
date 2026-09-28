@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { PeliculasService } from '../../core/services/pelicula.service';
 
 @Component({
@@ -12,31 +13,27 @@ import { PeliculasService } from '../../core/services/pelicula.service';
 export class AgregarPeliculaComponent {
   private fb = inject(FormBuilder);
   private peliculasService = inject(PeliculasService);
+  private router = inject(Router);
 
   cargando = signal(false);
   archivoImagen: File | null = null;
+  previewUrl = signal<string | null>(null);
 
   peliculaForm = this.fb.nonNullable.group({
-    titulo: ['', Validators.required],
+    titulo: ['', [Validators.required, Validators.minLength(2)]],
     sinopsis: ['', Validators.required],
-    duracionMinutos: [120, [Validators.required, Validators.min(1)]],
+    duracion_minutos: [120, [Validators.required, Validators.min(1)]],
     generos: [['Acción'], Validators.required],
     formato: ['2D' as const, Validators.required],
     idioma: ['Castellano' as const, Validators.required],
-    clasificacionEdad: [13, Validators.required],
-    precioBase: [4000, [Validators.required, Validators.min(0)]],
-    esPreventa: [false]
+    clasificacion_edad: [13, Validators.required],
+    precio_base: [4000, [Validators.required, Validators.min(0)]],
+    es_preventa: [false]
   });
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.archivoImagen = file;
-    }
+  get f() {
+    return this.peliculaForm.controls;
   }
-
-  archivoSeleccionado: File | null = null;
-  previewUrl = signal<string | null>(null);
 
   seleccionarArchivo(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -45,7 +42,7 @@ export class AgregarPeliculaComponent {
     }
 
     const archivo = input.files[0];
-    this.archivoSeleccionado = archivo;
+    this.archivoImagen = archivo;
 
     const previewAnterior = this.previewUrl();
     if (previewAnterior) {
@@ -57,6 +54,7 @@ export class AgregarPeliculaComponent {
   }
 
   async guardarPelicula() {
+    this.peliculaForm.markAllAsTouched();
     if (this.peliculaForm.invalid) return;
 
     this.cargando.set(true);
@@ -66,20 +64,23 @@ export class AgregarPeliculaComponent {
       await this.peliculasService.agregarPelicula({
         titulo: formValues.titulo,
         sinopsis: formValues.sinopsis,
-        duracionMinutos: formValues.duracionMinutos,
+        duracionMinutos: Number(formValues.duracion_minutos),
         generos: formValues.generos,
         formato: formValues.formato,
         idioma: formValues.idioma,
-        clasificacionEdad: formValues.clasificacionEdad,
-        precioBase: formValues.precioBase,
-        esPreventa: formValues.esPreventa,
+        clasificacionEdad: Number(formValues.clasificacion_edad),
+        precioBase: Number(formValues.precio_base),
+        esPreventa: formValues.es_preventa,
         portadaUrl: ''
       }, this.archivoImagen || undefined);
 
       alert('¡Película cargada exitosamente a la base de datos!');
       this.peliculaForm.reset();
       this.archivoImagen = null;
+      this.previewUrl.set(null);
+      this.router.navigate(['/home']);
     } catch (error) {
+      console.error(error);
       alert('Hubo un error al registrar la película.');
     } finally {
       this.cargando.set(false);

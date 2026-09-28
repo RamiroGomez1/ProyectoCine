@@ -1,47 +1,63 @@
-<div class="auth-card" style="max-width: 600px; margin: 2rem auto;">
-  <h2>Agregar Nueva Película</h2>
+<div class="add-movie-container">
+  <h1>🎬 Agregar Nueva Película</h1>
 
-  <form [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()">
+  <form [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()" class="movie-form">
     
     <div class="form-group">
-      <label>Título</label>
-      type="text" formControlName="titulo" placeholder="Ej. Avengers"
-    </div>
-
-    <div class="form-group">
-      <label>Sinopsis</label>
-      <textarea formControlName="sinopsis" placeholder="Descripción de la película..."></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Duración (minutos)</label>
-      <input type="number" formControlName="duracionMinutos">
-    </div>
-
-    <div class="form-group">
-      <label>Precio Base ($)</label>
-      <input type="number" formControlName="precioBase">
-    </div>
-
-    <div class="form-group">
-      <label>Póster de la Película</label>
-      <input type="file" accept="image/*" (change)="seleccionarArchivo($event)">
-    </div>
-
-    @if (previewUrl()) {
-      <div style="margin-bottom: 1rem; text-align: center;">
-        <p style="color: #8c8c9e; font-size: 0.85rem;">Vista previa:</p>
-        <img [src]="previewUrl()" alt="Vista previa" style="max-width: 150px; border-radius: 8px;">
-      </div>
-    }
-
-    <button type="submit" class="btn-submit" [disabled]="peliculaForm.invalid || cargando()">
-      @if (cargando()) {
-        Subiendo y guardando...
-      } @else {
-        Guardar Película
+      <label for="titulo">Título *</label>
+      <input type="text" id="titulo" formControlName="titulo" placeholder="Ej: Inception">
+      @if (f.titulo.touched && f.titulo.invalid) {
+        <small class="error">El título es obligatorio</small>
       }
-    </button>
+    </div>
 
+    <div class="form-group">
+      <label for="sinopsis">Sinopsis *</label>
+      <textarea id="sinopsis" formControlName="sinopsis" placeholder="Sinopsis de la película..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="duracionMinutos">Duración (minutos) *</label>
+      <input type="number" id="duracionMinutos" formControlName="duracionMinutos">
+    </div>
+
+    <div class="form-group">
+      <label for="formato">Formato *</label>
+      <select id="formato" formControlName="formato">
+        <option value="2D">2D</option>
+        <option value="3D">3D</option>
+        <option value="4D">4D</option>
+        <option value="5D">5D</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="idioma">Idioma *</label>
+      <select id="idioma" formControlName="idioma">
+        <option value="Castellano">Castellano</option>
+        <option value="Subtitulada">Subtitulada</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="precioBase">Precio Base ($) *</label>
+      <input type="number" id="precioBase" formControlName="precioBase">
+    </div>
+
+    <div class="form-group">
+      <label for="imagen">Imagen de Portada</label>
+      <input type="file" id="imagen" accept="image/*" (change)="seleccionarArchivo($event)">
+      
+      @if (previewUrl()) {
+        <div class="preview">
+          <p>Vista previa:</p>
+          <img [src]="previewUrl()" alt="Vista previa" width="150">
+        </div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="peliculaForm.invalid || cargando()" class="submit-btn">
+      {{ cargando() ? 'Guardando...' : 'Registrar Película' }}
+    </button>
   </form>
 </div>

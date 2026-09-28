@@ -1,6 +1,6 @@
 <header class="navbar">
   <div class="brand">
-    <h1>🎬 Proyecto Cine</h1>
+    <h1>Proyecto Cine</h1>
   </div>
 
   <nav class="nav-links">
@@ -8,6 +8,11 @@
     
     @if (authService.currentUser()) {
       <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
+      
+      <a *appRole="'admin'" routerLink="/admin" routerLinkActive="active" class="admin-badge">
+        Panel Admin
+      </a>
+
       <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
     } @else {
       <a routerLink="/login" routerLinkActive="active">Iniciar Sesión</a>
