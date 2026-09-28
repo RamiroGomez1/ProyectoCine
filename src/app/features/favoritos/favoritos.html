@@ -4,7 +4,7 @@
   @if (favoritosService.cargando()) {
     <p class="loading-state">Cargando tus películas favoritas...</p>
   } @else if (favoritos().length === 0) {
-    <p class="empty-state">No tienes películas favoritas aún. ¡Explora el catálogo y añade algunas!</p>
+    <p class="empty-state">No tenes películas favoritas aún. ¡Explora el catálogo y añadi algunas!</p>
   } @else {
     <div class="favoritos-grid">
       @for (fav of favoritos(); track fav.id) {
