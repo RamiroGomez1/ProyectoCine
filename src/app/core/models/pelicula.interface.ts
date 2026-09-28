@@ -6,7 +6,7 @@ export interface Pelicula {
   sinopsis: string;
   duracionMinutos: number;
   portadaUrl: string;
-  generos: string;
+  generos: string[];
   formato: '2D' | '3D' | '4D' | '5D';
   idioma: 'Castellano' | 'Subtitulada';
   clasificacionEdad: number;

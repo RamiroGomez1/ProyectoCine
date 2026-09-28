@@ -64,7 +64,15 @@ export class AgregarPeliculaComponent {
       const formValues = this.peliculaForm.getRawValue();
 
       await this.peliculasService.agregarPelicula({
-        ...formValues,
+        titulo: formValues.titulo,
+        sinopsis: formValues.sinopsis,
+        duracionMinutos: formValues.duracionMinutos,
+        generos: formValues.generos,
+        formato: formValues.formato,
+        idioma: formValues.idioma,
+        clasificacionEdad: formValues.clasificacionEdad,
+        precioBase: formValues.precioBase,
+        esPreventa: formValues.esPreventa,
         portadaUrl: ''
       }, this.archivoImagen || undefined);
 

@@ -13,6 +13,7 @@
         </div>
 
         <p class="synopsis">{{ pelicula().sinopsis }}</p>
+        <p>{{ pelicula().generos.join(' • ') }}</p>
         
         <div class="tech-specs">
           <p><strong>Duración:</strong> {{ pelicula().duracion }} minutos</p>
