@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { Pelicula } from '../models/pelicula.interface';
 
@@ -37,14 +37,14 @@ export class PeliculasService {
       .insert({
         titulo: nuevaPelicula.titulo,
         sinopsis: nuevaPelicula.sinopsis,
-        duracionMinutos: nuevaPelicula.duracionMinutos,
-        portadaUrl: portadaUrl,
+        duracion_minutos: nuevaPelicula.duracionMinutos,
+        portada_url: portadaUrl,
         generos: nuevaPelicula.generos,
         formato: nuevaPelicula.formato,
         idioma: nuevaPelicula.idioma,
-        clasificacionEdad: nuevaPelicula.clasificacionEdad,
-        precioBase: nuevaPelicula.precioBase,
-        esPreventa: nuevaPelicula.esPreventa ?? false
+        clasificacion_edad: nuevaPelicula.clasificacionEdad,
+        precio_base: nuevaPelicula.precioBase,
+        es_preventa: nuevaPelicula.esPreventa ?? false
       });
 
     if (error) {
@@ -105,5 +105,4 @@ export class PeliculasService {
     if (error) throw error;
     return data;
   }
-
 }
