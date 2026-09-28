@@ -35,6 +35,11 @@ export const routes: Routes = [
     canActivate: [authAdminGuard]
   },
   { 
+    path: 'admin/agregar-pelicula', 
+    loadComponent: () => import('./features/agregar-pelicula/agregar-pelicula').then(m => m.AgregarPeliculaComponent), 
+    canActivate: [authAdminGuard]
+  },
+  { 
     path: 'reserva/:funcionId', 
     loadComponent: () => import('./features/seat-selection/seat-selection').then(m => m.SeatSelectionComponent) 
   },

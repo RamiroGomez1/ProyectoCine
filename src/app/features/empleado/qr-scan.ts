@@ -18,25 +18,30 @@ export class QrScannerComponent {
   mensajeValidacion = signal<{ texto: string, tipo: 'exito' | 'error' } | null>(null);
 
   async procesarCodigo(codigoQR: string) {
-    const { data: reserva, error: fetchError } = await this.supabase
-      .from('reservas')
-      .select('*')
-      .eq('codigo_qr', codigoQR)
-      .single();
-
-    if (fetchError || !reserva) {
-      this.mensajeValidacion.set({ texto: 'Código inválido o no encontrado.', tipo: 'error' });
+    if (!codigoQR.trim()) {
+      this.mensajeValidacion.set({ texto: 'Ingresá un código válido.', tipo: 'error' });
       return;
     }
 
-    if (reserva.estado === 'utilizado') {
+    const { data: reserva, error: fetchError } = await this.supabase
+      .from('reservas')
+      .select('*')
+      .eq('qr_codigo', codigoQR)
+      .single();
+
+    if (fetchError || !reserva) {
+      this.mensajeValidacion.set({ texto: 'Código QR inválido o no encontrado en el sistema.', tipo: 'error' });
+      return;
+    }
+
+    if (reserva.estado === 'usada' || reserva.estado === 'utilizado') {
       this.mensajeValidacion.set({ texto: 'Este código ya fue validado previamente.', tipo: 'error' });
       return;
     }
 
     const { error: updateError } = await this.supabase
       .from('reservas')
-      .update({ estado: 'utilizado' })
+      .update({ estado: 'usada' })
       .eq('id', reserva.id);
 
     if (updateError) {
@@ -48,7 +53,7 @@ export class QrScannerComponent {
 
     const empleado = this.authService.currentUser();
     if (empleado) {
-      await this.auditoria.registrarAccion(empleado.id, 'Validación QR', `QR validado para la reserva ID: ${reserva.id}`);
+      await this.auditoria.registrarAccion(empleado.id, 'Validación QR', `QR validado correctamente para la reserva ID: ${reserva.id}`);
     }
   }
 }

@@ -1,7 +1,6 @@
 <div class="scanner-container">
   <h1>Validación de Accesos y Candy Bar</h1>
-  <p class="subtitle">Escaneá el código QR del ticket o ingresalo manualmente
-    para validar la entrada o el producto.</p>
+  <p class="subtitle">Escaneá el código QR del ticket o ingresalo manualmente si el lector no funciona.</p>
 
   <div class="input-manual-group">
     <input
@@ -13,10 +12,8 @@
   </div>
 
   @if (mensajeValidacion()) {
-  <div class="mensaje-validacion"
-    [class.ex]="mensajeValidacion()?.tipo === 'exito'"
-    [class.error]="mensajeValidacion()?.tipo === 'error'">
-    {{ mensajeValidacion()?.texto }}
-  </div>
+    <div class="mensaje-validacion" [class.exito]="mensajeValidacion()?.tipo === 'exito'" [class.error]="mensajeValidacion()?.tipo === 'error'">
+      {{ mensajeValidacion()?.texto }}
+    </div>
   }
 </div>
