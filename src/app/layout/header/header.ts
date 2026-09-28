@@ -4,12 +4,13 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class HeaderComponent {
-  authService = inject(AuthService);
+  public authService = inject(AuthService);
   private router = inject(Router);
 
   async logout() {

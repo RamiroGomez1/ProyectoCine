@@ -1,3 +1,4 @@
+// src/app/core/services/auth.service.ts
 import { Injectable, signal, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { User, Session } from '@supabase/supabase-js';
@@ -11,8 +12,7 @@ export class AuthService {
 
   currentUser = signal<User | null>(null);
   currentSession = signal<Session | null>(null);
-  currentUserData = signal<Usuario | null>(null);
-
+  currentUserData = signal<Usuario | null>(null); 
   constructor() {
     this.initAuthSession();
   }
@@ -37,7 +37,7 @@ export class AuthService {
     });
   }
 
-  private async cargarDatosUsuario(userId: string) {
+  async cargarDatosUsuario(userId: string) {
     const { data, error } = await this.supabase
       .from('usuarios')
       .select('*')
@@ -47,11 +47,11 @@ export class AuthService {
     if (error) {
       console.error('Error al cargar datos del usuario:', error.message);
     } else if (data) {
-      this.currentUserData.set(data);
+      this.currentUserData.set(data as Usuario);
     }
   }
 
-async signUp(email: string, password: string, nombre: string, apellido: string) {
+  async signUp(email: string, password: string, nombre: string, apellido: string) {
   return this.supabase.auth.signUp({
     email,
     password,

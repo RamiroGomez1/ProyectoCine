@@ -13,5 +13,5 @@ export interface Usuario {
 
     puntosFidelidad: number;
     saldoFavor: number;
-    rol:'cliente' | 'empleado' | 'administrador'
+    rol:'cliente' | 'empleado' | 'admin'
 }
