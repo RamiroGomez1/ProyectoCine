@@ -23,6 +23,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/movie-detail/movie-detail').then(m => m.MovieDetailComponent) 
   },
   { 
+    path: 'favoritos', 
+    loadComponent: () => import('./features/favoritos/favoritos').then(m => m.FavoritosComponent) 
+  },
+  { 
     path: 'reserva/:funcionId', 
     loadComponent: () => import('./features/seat-selection/seat-selection').then(m => m.SeatSelectionComponent) 
   },

@@ -15,36 +15,31 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Señales para manejar el estado de la vista
-  cargando = signal(false);
-  mensajeError = signal<string | null>(null);
-
-  // Definición del formulario reactivo
-  loginForm = this.fb.nonNullable.group({
+  loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]]
+    password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
-  async login() {
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
+
+  async onSubmit() {
     if (this.loginForm.invalid) return;
 
-    this.cargando.set(true);
-    this.mensajeError.set(null);
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
-    const { email, password } = this.loginForm.getRawValue();
+    const { email, password } = this.loginForm.value;
 
     try {
-      const { data, error } = await this.authService.signIn(email, password);
-
-      if (error) {
-        this.mensajeError.set('Correo o contraseña incorrectos.');
-      } else {
-        this.router.navigate(['/']); 
-      }
-    } catch (err) {
-      this.mensajeError.set('Ocurrió un error inesperado al iniciar sesión.');
+      const { error } = await this.authService.signIn(email!, password!);
+      if (error) throw error;
+      
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      this.errorMessage.set(error.message || 'Error al iniciar sesión');
     } finally {
-      this.cargando.set(false);
+      this.isLoading.set(false);
     }
   }
 }

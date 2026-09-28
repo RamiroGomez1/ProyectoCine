@@ -4,13 +4,13 @@
     <p class="subtitle">Completá tus datos para obtener un 20% de descuento en tu primera compra.</p>
 
     @if (successMessage()) {
-      <div class="success-msg" style="margin-bottom: 1rem;">
+      <div class="success-msg" style="margin-bottom: 1rem; color: #27ae60;">
         {{ successMessage() }}
       </div>
     }
 
     @if (errorMessage()) {
-      <div class="error-msg" style="margin-bottom: 1rem;">
+      <div class="error-msg" style="margin-bottom: 1rem; color: #e74c3c;">
         {{ errorMessage() }}
       </div>
     }
@@ -19,12 +19,32 @@
       
       <div class="form-group">
         <label for="nombre">Nombre</label>
-        <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
+        <input 
+          id="nombre" 
+          type="text" 
+          formControlName="nombre" 
+          placeholder="Tu nombre"
+        >
+        @if (registerForm.controls.nombre.invalid && registerForm.controls.nombre.touched) {
+          <small style="color: #e74c3c; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
+            El nombre es obligatorio (mínimo 2 caracteres).
+          </small>
+        }
       </div>
 
       <div class="form-group">
         <label for="apellido">Apellido</label>
-        <input id="apellido" type="text" formControlName="apellido" placeholder="Tu apellido">
+        <input 
+          id="apellido" 
+          type="text" 
+          formControlName="apellido" 
+          placeholder="Tu apellido"
+        >
+        @if (registerForm.controls.apellido.invalid && registerForm.controls.apellido.touched) {
+          <small style="color: #e74c3c; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
+            El apellido es obligatorio (mínimo 2 caracteres).
+          </small>
+        }
       </div>
 
       <div class="form-group">
@@ -36,7 +56,7 @@
           placeholder="ejemplo@correo.com"
         >
         @if (registerForm.controls.email.invalid && registerForm.controls.email.touched) {
-          <small style="color: #d9534f; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
+          <small style="color: #e74c3c; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
             Ingresá un correo electrónico válido.
           </small>
         }
@@ -51,7 +71,7 @@
           placeholder="Mínimo 6 caracteres"
         >
         @if (registerForm.controls.password.invalid && registerForm.controls.password.touched) {
-          <small style="color: #d9534f; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
+          <small style="color: #e74c3c; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
             La contraseña debe tener al menos 6 caracteres.
           </small>
         }

@@ -1,14 +1,14 @@
 <div class="auth-container">
   <div class="auth-card">
     <h2>Iniciar Sesión</h2>
-
-    @if (mensajeError()) {
+    
+    @if (errorMessage()) {
       <div class="error-msg" style="margin-bottom: 1rem;">
-        {{ mensajeError() }}
+        {{ errorMessage() }}
       </div>
     }
 
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       
       <div class="form-group">
         <label for="email">Correo electrónico</label>
@@ -16,13 +16,8 @@
           id="email" 
           type="email" 
           formControlName="email" 
-          placeholder="ejemplo@correo.com"
+          placeholder="tu@email.com"
         >
-        @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
-          <small class="error-msg" style="display: block; text-align: left; margin-top: 0.3rem;">
-            Ingresá un correo electrónico válido.
-          </small>
-        }
       </div>
 
       <div class="form-group">
@@ -31,28 +26,22 @@
           id="password" 
           type="password" 
           formControlName="password" 
-          placeholder="Tu contraseña"
+          placeholder="******"
         >
-        @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
-          <small class="error-msg" style="display: block; text-align: left; margin-top: 0.3rem;">
-            La contraseña es obligatoria.
-          </small>
-        }
       </div>
 
-      <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || cargando()">
-        @if (cargando()) {
-          Iniciando sesión...
+      <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || isLoading()">
+        @if (isLoading()) {
+          Ingresando...
         } @else {
-          Ingresar
+          Entrar
         }
       </button>
 
     </form>
-
-    <!-- Enlace hacia el Registro -->
+    
     <p class="auth-link">
-      ¿No tenés cuenta? <a routerLink="/register">Registrate acá</a>
+      ¿No tienes cuenta? <a routerLink="/register">Regístrate aquí</a>
     </p>
   </div>
 </div>

@@ -1,0 +1,128 @@
+.favoritos-container {
+  padding: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #ffffff;
+}
+
+.favoritos-container h2 {
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  border-bottom: 2px solid #161625;
+  padding-bottom: 0.5rem;
+}
+
+.empty-state, .loading-state {
+  color: #b3b3b3;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.favorito-card {
+  display: flex;
+  gap: 1rem;
+  background: #161625;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cover {
+  width: 90px;
+  height: 135px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.info h3 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.genero {
+  color: #b3b3b3;
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.nota {
+  font-size: 0.85rem;
+  color: #e0e0e0;
+  background: #0b0b10;
+  padding: 8px;
+  border-radius: 6px;
+  border-left: 3px solid #e50914; 
+  margin: 0.5rem 0;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+button {
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.btn-edit {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #e50914; 
+  color: white;
+}
+
+.btn-save {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-cancel {
+  background-color: #4a4a5a;
+  color: white;
+}
+
+.edit-nota-form input {
+  width: 100%;
+  padding: 6px 8px;
+  background-color: #0b0b10;
+  border: 1px solid #333344;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.edit-nota-form input:focus {
+  outline: none;
+  border-color: #e50914;
+}

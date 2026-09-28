@@ -1,0 +1,37 @@
+<section class="favoritos-container">
+  <h2>⭐ Mis Películas Favoritas</h2>
+
+  @if (favoritosService.cargando()) {
+    <p class="loading-state">Cargando tus películas favoritas...</p>
+  } @else if (favoritos().length === 0) {
+    <p class="empty-state">No tienes películas favoritas aún. ¡Explora el catálogo y añade algunas!</p>
+  } @else {
+    <div class="favoritos-grid">
+      @for (fav of favoritos(); track fav.id) {
+        <div class="favorito-card">
+          <img [src]="fav.peliculas?.portada_url" [alt]="fav.peliculas?.titulo" class="cover">
+          <div class="info">
+            <h3>{{ fav.peliculas?.titulo }}</h3>
+            <p class="genero">Género: {{ fav.peliculas?.genero }}</p>
+            
+            @if (editandoId !== fav.id) {
+              <p class="nota"><strong>Mi reseña personal:</strong> {{ fav.nota || 'Sin notas asignadas.' }}</p>
+              <div class="actions">
+                <button class="btn-edit" (click)="iniciarEdicion(fav)"> Editar Reseña</button>
+                <button class="btn-delete" (click)="eliminar(fav.id!)"> Eliminar</button>
+              </div>
+            } @else {
+              <div class="edit-nota-form">
+                <input type="text" [formControl]="notaControl" placeholder="Escribe tu opinión sobre esta película...">
+                <div class="actions">
+                  <button class="btn-save" (click)="guardarNota(fav.id!)" [disabled]="notaControl.invalid">Guardar</button>
+                  <button class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>
