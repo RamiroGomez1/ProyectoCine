@@ -6,4 +6,6 @@ export interface ProductoCandyBar{
     imagenUrl:string;
     categoria:'Combos'|'Pochoclos'|'Bebidas'|'Golosinas';
     cantidadSeleccionada?: number;
+    esCombo: boolean;
+    costoEnPuntos?: number;
 }

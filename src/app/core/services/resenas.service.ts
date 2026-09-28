@@ -1,14 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
-
-export interface Resena {
-  id?: number;
-  pelicula_id: string;
-  usuario_id: string;
-  estrellas: number; 
-  comentario: string; 
-  fecha?: string;
-}
+import { Resena } from '../models/resena.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,34 +8,41 @@ export interface Resena {
 export class ResenasService {
   private supabase = inject(SupabaseService).client;
 
-  // Guarda la reseña que deja el usuario 
-  async agregarResena(resena: Resena): Promise<void> {
-    const { error } = await this.supabase
-      .from('resenas')
-      .insert(resena);
-
-    if (error) throw error;
-  }
-
-  async obtenerPromedioPelicula(peliculaId: string): Promise<number> {
+  async obtenerResenasPorPelicula(peliculaId: string): Promise<{ resenas: Resena[], promedio: number }> {
     const { data, error } = await this.supabase
       .from('resenas')
-      .select('estrellas')
-      .eq('pelicula_id', peliculaId);
+      .select('*, usuarios(nombre, apellido)')
+      .eq('pelicula_id', peliculaId)
+      .order('created_at', { ascending: false });
 
-    if (error || !data || data.length === 0) return 0;
+    if (error) {
+      console.error('Error al obtener reseñas:', error.message);
+      return { resenas: [], promedio: 0 };
+    }
 
-    const suma = data.reduce((acc, curr) => acc + curr.estrellas, 0);
-    return Number((suma / data.length).toFixed(1));
+    const resenas = data as Resena[];
+    let promedio = 0;
+
+    if (resenas.length > 0) {
+      const suma = resenas.reduce((acc, curr) => acc + curr.puntuacion, 0);
+      promedio = Number((suma / resenas.length).toFixed(1));
+    }
+
+    return { resenas, promedio };
   }
 
-  async obtenerHistorialUsuario(usuarioId: string) {
+  async agregarResena(resena: { pelicula_id: string; user_id: string; puntuacion: number; comentario: string }) {
     const { data, error } = await this.supabase
-      .from('historial_vistas') 
-      .select('pelicula_id, titulo, portadaUrl, fecha_funcion')
-      .eq('usuario_id', usuarioId);
+      .from('resenas')
+      .insert([resena])
+      .select()
+      .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error al guardar reseña:', error.message);
+      throw error;
+    }
+
     return data;
   }
 }

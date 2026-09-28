@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { authAdminGuard } from './core/guards/auth-admin.guard';
 
 export const routes: Routes = [
   { 
@@ -24,7 +26,13 @@ export const routes: Routes = [
   },
   { 
     path: 'favoritos', 
-    loadComponent: () => import('./features/favoritos/favoritos').then(m => m.FavoritosComponent) 
+    loadComponent: () => import('./features/favoritos/favoritos').then(m => m.FavoritosComponent), 
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'admin', 
+    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboardComponent), 
+    canActivate: [authAdminGuard]
   },
   { 
     path: 'reserva/:funcionId', 
