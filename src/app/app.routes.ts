@@ -47,6 +47,10 @@ export const routes: Routes = [
     path: 'candybar', 
     loadComponent: () => import('./features/candybar/candybar').then(m => m.CandybarComponent) 
   },
+  {
+  path: 'perfil',
+  loadComponent: () => import('./features/perfil/perfil').then(m => m.PerfilComponent)
+  },
   { 
     path: 'resumen', 
     loadComponent: () => import('./features/resumen/resumen').then(m => m.ResumenComponent) 

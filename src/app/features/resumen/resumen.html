@@ -1,40 +1,73 @@
 <div class="resumen-container">
   <h2>Resumen de tu Compra</h2>
 
-  @if (!puedeComprar()) {
-    <div class="alerta-error">
-      {{ mensajeRestriccion() }}
+  @if (qrGenerado()) {
+  <div class="ticket-confirmado">
+    <h3>¡Compra Confirmada con Éxito!</h3>
+    <p class="subtitle">Presentá este código QR en la entrada o descargá tu
+      ticket en PDF.</p>
+
+    <div class="qr-box">
+      <img [src]="qrGenerado()" alt="Código QR de la entrada">
     </div>
+
+    <div
+      style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+      <button type="button" class="btn-coupon"
+        style="background-color: #27ae60;" (click)="descargarTicketPDF()">
+        📥 Descargar Entrada (PDF)
+      </button>
+      <a routerLink="/home" class="btn-back"
+        style="margin-bottom: 0; align-self: center;">Volver a Cartelera</a>
+    </div>
+  </div>
   } @else {
-    @if (peliculaActual().restriccion === '+13' || peliculaActual().restriccion === '+18') {
-      <div class="alerta-info">
-        Toda entrada comprada para esta película requiere que los menores ingresen acompañados por un adulto.
-      </div>
+  @if (!puedeComprar()) {
+  <div class="alerta-error">
+    {{ mensajeRestriccion() }}
+  </div>
+  }
+
+  @if (reservaData()?.pelicula?.clasificacion_edad >= 13) {
+  <div class="alerta-info">
+    Toda entrada para esta película requiere que los menores ingresen
+    acompañados por un adulto.
+  </div>
+  }
+
+  <div class="carrito-items">
+    @for (item of carritoService.items(); track item.id) {
+    <div class="item">
+      <span>{{ item.cantidad }}x {{ item.nombre }}</span>
+      <span>${{ item.precio * item.cantidad }}</span>
+    </div>
     }
+  </div>
 
-    <div class="carrito-items">
-      @for (item of carritoService.items(); track item.id) {
-        <div class="item">
-          <span>{{ item.cantidad }}x {{ item.nombre }} ({{ item.tipo }})</span>
-          <span>${{ item.precio * item.cantidad }}</span>
-        </div>
-      }
-    </div>
+  <div class="cupon-section">
+    <input type="text" [ngModel]="codigoCupon()"
+      (ngModelChange)="codigoCupon.set($event)"
+      placeholder="Cupón (ej: PRIMERACOMPRA)">
+    <button (click)="aplicarCupon()">Aplicar</button>
+    @if (mensajeCupon()) {
+    <p>{{ mensajeCupon() }}</p>
+    }
+  </div>
 
-    <div class="cupon-section">
-      <input type="text" [(ngModel)]="codigoCupon" placeholder="Ingresar cupón">
-      <button (click)="aplicarCupon()">Aplicar</button>
-      <p>{{ mensajeCupon() }}</p>
-    </div>
+  <div class="totales">
+    <p>Subtotal: ${{ carritoService.total() }}</p>
+    @if (descuentoAplicado() > 0) {
+    <p class="descuento">Descuento aplicado: -${{ descuentoAplicado() }}</p>
+    }
+    <h3>Total a Pagar: ${{ totalPagar() }}</h3>
+  </div>
 
-    <div class="totales">
-      <p>Subtotal: ${{ carritoService.total() }}</p>
-      @if (descuentoAplicado() > 0) {
-        <p class="descuento">Descuento: -${{ descuentoAplicado() }}</p>
-      }
-      <h3>Total a Pagar: ${{ carritoService.total() - descuentoAplicado() }}</h3>
-    </div>
-
-    <button class="btn-comprar" (click)="finalizarCompra()">Confirmar Compra y Generar QR</button>
+  <button
+    class="btn-comprar"
+    [disabled]="!puedeComprar() || cargandoPago() || carritoService.items().length === 0"
+    (click)="confirmarCompra()">
+    {{ cargandoPago() ? 'Generando Ticket...' : 'Confirmar Compra y Generar QR'
+    }}
+  </button>
   }
 </div>

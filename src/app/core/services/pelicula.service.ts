@@ -96,13 +96,17 @@ export class PeliculasService {
   }
 
   async obtenerTop3Vendidas() {
-    const { data, error } = await this.supabase
-      .from('peliculas')
-      .select('*')
-      .order('entradas_vendidas', { ascending: false })
-      .limit(3);
+  const { data, error } = await this.supabase
+    .from('peliculas')
+    .select('*')
+    .gt('entradas_vendidas', 0) 
+    .order('entradas_vendidas', { ascending: false })
+    .limit(3);
 
-    if (error) throw error;
-    return data;
+  if (error) {
+    console.error('Error al obtener top 3:', error.message);
+    return [];
   }
+  return data || [];
+}
 }

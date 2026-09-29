@@ -1,24 +1,65 @@
-<!-- seat-selection.html -->
 <div class="sala-container">
-  <div class="pantalla">PANTALLA</div>
-  
+  <a [routerLink]="['/pelicula', funcion()?.pelicula_id]" class="btn-back">⬅ Volver a Detalle</a>
+
+  @if (cargando()) {
+    <p>Cargando sala...</p>
+  } @else {
+    <h2>{{ funcion()?.peliculas?.titulo }}</h2>
+    <p class="subtitle">{{ funcion()?.sala }} • {{ funcion()?.formato }} • {{ funcion()?.idioma }}</p>
+
+    <div class="legend-container">
+      <div class="legend-item"><span class="seat-sample disponible"></span> Normal (${{ precioBase() }})</div>
+      <div class="legend-item"><span class="seat-sample vip"></span> VIP (+35%)</div>
+      <div class="legend-item"><span class="seat-sample discapacidad"></span> Fila Accesible (J-K)</div>
+      <div class="legend-item"><span class="seat-sample ocupado"></span> Ocupada</div>
+      <div class="legend-item"><span class="seat-sample seleccionado"></span> Seleccionada</div>
+    </div>
+
+    <div class="pantalla-container">
+      <div class="pantalla">PANTALLA</div>
+    </div>
+
+    <div class="sala">
   @for (fila of sala(); track fila[0].fila) {
-    <div class="fila">
+    <div class="fila" [class.fila-accesible]="fila[0].fila === 'J-K'">
       <span class="letra-fila">{{ fila[0].fila }}</span>
       
-      @for (butaca of fila; track butaca.id) {
-        <button 
-          class="butaca"
-          [class.vip]="butaca.tipo === 'vip'"
-          [class.discapacidad]="butaca.tipo === 'discapacidad'"
-          [class.ocupada]="butaca.estado === 'ocupada'"
-          [disabled]="butaca.estado === 'ocupada'"
-          (click)="seleccionarButaca(butaca)">
-          {{ butaca.numero }}
-        </button>
-      }
+      <div class="butacas-fila">
+        @for (butaca of fila; track butaca.id; let idx = $index) {
+          @if ((fila[0].fila !== 'J-K' && (idx === 4 || idx === 24)) || (fila[0].fila === 'J-K' && (idx === 2 || idx === 12))) {
+            <span class="pasillo"></span>
+          }
+
+          <button 
+            type="button"
+            class="butaca"
+            [class.vip]="butaca.tipo === 'vip'"
+            [class.discapacidad]="butaca.tipo === 'discapacidad'"
+            [class.ocupada]="butaca.estado === 'ocupada'"
+            [class.seleccionada]="butaca.estado === 'seleccionada'"
+            [disabled]="butaca.estado === 'ocupada'"
+            (click)="seleccionarButaca(butaca)">
+            {{ butaca.numero }}
+          </button>
+        }
+      </div>
     </div>
-  } @empty {
-    <div class="empty-state">Cargando sala...</div>
+  }
+</div>
+
+    <!-- BARRA INFERIOR DE RESUMEN -->
+    <div class="summary-card">
+      <div>
+        <p>Butacas seleccionadas: <strong>{{ asientosSeleccionados().length }}</strong> 
+          @if (asientosSeleccionados().length > 0) {
+            <span>({{ asientosIdsTexto() }})</span>
+          }
+        </p>
+        <p class="total-price">Subtotal: ${{ totalEntradas() }}</p>
+      </div>
+      <button class="btn-next" [disabled]="asientosSeleccionados().length === 0" (click)="continuarACandyBar()">
+        Continuar al Candy Bar 
+      </button>
+    </div>
   }
 </div>

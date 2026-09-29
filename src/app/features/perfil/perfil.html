@@ -1,0 +1,155 @@
+<div class="perfil-container">
+  <div class="perfil-header">
+    <a routerLink="/home" class="btn-back">⬅ Volver a Cartelera</a>
+    <div class="header-titles">
+      <h2>👤 Mi Perfil</h2>
+      <p class="subtitle">Gestiona tu información personal y revisa tus beneficios de cine.</p>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <p class="loading-text">Cargando datos de tu perfil...</p>
+  } @else {
+
+    @if (usuario()) {
+      <div class="status-summary-grid">
+        <div class="stat-card points">
+          <span class="stat-label">Puntos de Fidelidad</span>
+          <strong class="stat-val">⭐ {{ usuario()?.puntosFidelidad }}</strong>
+          <small>Canjeables por entradas y candy bar</small>
+        </div>
+
+        <div class="stat-card balance">
+          <span class="stat-label">Saldo a Favor</span>
+          <strong class="stat-val">${{ usuario()?.saldoFavor }}</strong>
+          <small>Crédito disponible para compras</small>
+        </div>
+
+        <div class="stat-card role">
+          <span class="stat-label">Rol del Sistema</span>
+          <strong class="stat-val role-badge">{{ usuario()?.rol | uppercase }}</strong>
+          <small>Nivel de cuenta asignado</small>
+        </div>
+      </div>
+    }
+
+    <div class="perfil-card">
+      @if (mensajeExito()) {
+        <div class="alert-success">{{ mensajeExito() }}</div>
+      }
+      @if (mensajeError()) {
+        <div class="alert-error">{{ mensajeError() }}</div>
+      }
+
+      <form [formGroup]="perfilForm" (ngSubmit)="guardarCambios()">
+        
+        <!-- Email de solo lectura -->
+        <div class="form-group">
+          <label>Correo Electrónico (Asociado a tu cuenta)</label>
+          <input 
+            type="email" 
+            [value]="usuario()?.email" 
+            readonly 
+            class="input-disabled"
+          >
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="nombre">Nombre *</label>
+            <input 
+              id="nombre" 
+              type="text" 
+              formControlName="nombre" 
+              placeholder="Tu nombre"
+            >
+            @if (perfilForm.controls.nombre.invalid && perfilForm.controls.nombre.touched) {
+              <small class="error-hint">El nombre es obligatorio (mínimo 2 caracteres).</small>
+            }
+          </div>
+
+          <div class="form-group half">
+            <label for="apellido">Apellido *</label>
+            <input 
+              id="apellido" 
+              type="text" 
+              formControlName="apellido" 
+              placeholder="Tu apellido"
+            >
+            @if (perfilForm.controls.apellido.invalid && perfilForm.controls.apellido.touched) {
+              <small class="error-hint">El apellido es obligatorio (mínimo 2 caracteres).</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="fechaNacimiento">Fecha de Nacimiento *</label>
+            <input 
+              id="fechaNacimiento" 
+              type="date" 
+              formControlName="fechaNacimiento"
+            >
+            @if (perfilForm.controls.fechaNacimiento.invalid && perfilForm.controls.fechaNacimiento.touched) {
+              <small class="error-hint">Selecciona tu fecha de nacimiento.</small>
+            }
+          </div>
+
+          <div class="form-group half">
+            <label for="tipoSangre">Tipo de Sangre *</label>
+            <select id="tipoSangre" formControlName="tipoSangre">
+              <option value="" disabled>-- Selecciona un grupo --</option>
+              @for (tipo of tiposSangreDisponibles; track tipo) {
+                <option [value]="tipo">{{ tipo }}</option>
+              }
+            </select>
+            @if (perfilForm.controls.tipoSangre.invalid && perfilForm.controls.tipoSangre.touched) {
+              <small class="error-hint">El tipo de sangre es requerido.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="colorOjos">Color de Ojos *</label>
+            <input 
+              id="colorOjos" 
+              type="text" 
+              formControlName="colorOjos" 
+              placeholder="Ej: Marrones, Verdes, Azules..."
+            >
+            @if (perfilForm.controls.colorOjos.invalid && perfilForm.controls.colorOjos.touched) {
+              <small class="error-hint">El color de ojos es obligatorio.</small>
+            }
+          </div>
+
+          <div class="form-group half">
+            <label for="diasVacaciones">Días de Vacaciones por Año *</label>
+            <input 
+              id="diasVacaciones" 
+              type="number" 
+              formControlName="diasVacaciones" 
+              min="0" 
+              max="365"
+            >
+            @if (perfilForm.controls.diasVacaciones.invalid && perfilForm.controls.diasVacaciones.touched) {
+              <small class="error-hint">Ingresa un número válido de días de vacaciones.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn-save" 
+            [disabled]="perfilForm.invalid || guardando()"
+          >
+            {{ guardando() ? 'Guardando Cambios...' : 'Guardar Información' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  }
+</div>

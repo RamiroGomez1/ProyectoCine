@@ -6,7 +6,7 @@ import { PeliculasService } from '../../core/services/pelicula.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink], // Necesarios para el input y la navegación
+  imports: [FormsModule, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -16,16 +16,21 @@ export class HomeComponent implements OnInit {
   peliculas = signal<any[]>([]);
   top3Vendidas = signal<any[]>([]);
   cargando = signal(true);
-  
   filtroGenero = signal<string>('');
 
   peliculasFiltradas = computed(() => {
     const busqueda = this.filtroGenero().toLowerCase().trim();
-    if (!busqueda) return this.peliculas();
+    const lista = this.peliculas();
 
-    return this.peliculas().filter(peli =>
-      peli.generos.some((g: string) => g.toLowerCase().includes(busqueda))
-    );
+    if (!busqueda) return lista;
+
+    return lista.filter(peli => {
+      if (!peli.generos) return false;
+      if (Array.isArray(peli.generos)) {
+        return peli.generos.some((g: string) => g.toLowerCase().includes(busqueda));
+      }
+      return String(peli.generos).toLowerCase().includes(busqueda);
+    });
   });
 
   async ngOnInit() {
@@ -38,7 +43,7 @@ export class HomeComponent implements OnInit {
       this.top3Vendidas.set(top3);
       this.peliculas.set(todas);
     } catch (error) {
-      console.error("Error cargando la cartelera", error);
+      console.error('Error cargando cartelera:', error);
     } finally {
       this.cargando.set(false);
     }

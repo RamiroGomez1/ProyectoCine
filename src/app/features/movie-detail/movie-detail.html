@@ -1,44 +1,129 @@
 <div class="detail-container">
+  <a routerLink="/home" class="btn-back">⬅ Volver a Cartelera</a>
+
   @if (cargando()) {
     <p>Cargando detalles de la película...</p>
   } @else if (pelicula()) {
     <div class="detail-card">
-      <img [src]="pelicula().imagen" alt="Portada de {{ pelicula().nombre }}" class="detail-cover">
+      <img 
+        [src]="pelicula().portada_url || 'https://via.placeholder.com/320x450?text=Sin+Portada'" 
+        [alt]="pelicula().titulo" 
+        class="detail-cover"
+      >
       
       <div class="detail-info">
-        <h1>{{ pelicula().nombre }}</h1>
+        <h1>{{ pelicula().titulo }}</h1>
         
         <div class="rating">
-          ⭐ {{ promedioResenas() }} / 5.0
+          ⭐ {{ promedioResenas() }} / 5.0 
+          <small style="color: #8c8c9e; font-size: 0.85rem; font-weight: normal;">({{ resenas().length }} reseñas)</small>
         </div>
 
         <p class="synopsis">{{ pelicula().sinopsis }}</p>
-        <p>{{ pelicula().generos.join(' • ') }}</p>
+        
+        <p class="genres">
+          {{ pelicula().generos?.join ? pelicula().generos.join(' • ') : pelicula().generos }}
+        </p>
         
         <div class="tech-specs">
-          <p><strong>Duración:</strong> {{ pelicula().duracion }} minutos</p>
+          <p><strong>Duración:</strong> {{ pelicula().duracion_minutos }} min</p>
           <p><strong>Formatos:</strong> {{ pelicula().formato }}</p>
           <p><strong>Idioma:</strong> {{ pelicula().idioma }}</p>
+          <p><strong>Clasificación:</strong> {{ pelicula().clasificacion_edad > 0 ? '+' + pelicula().clasificacion_edad : 'ATP' }}</p>
         </div>
         
-        @if (pelicula().restriccion === '+13' || pelicula().restriccion === '+18') {
+        @if (pelicula().clasificacion_edad >= 13) {
           <div class="alerta-edad">
-            Película con restricción {{ pelicula().restriccion }}. Todo menor debe ir acompañado por un adulto.
+            Película para mayores de {{ pelicula().clasificacion_edad }} años. Menores requieren ingreso con un adulto[cite: 9].
           </div>
         }
 
         <div class="precio-section">
           @if (enPreventa()) {
-            <span class="badge-preventa">¡Precio Especial de Preventa!</span>
-            <h2>${{ pelicula().precio_preventa }}</h2>
+            <span class="badge-preventa">¡Precio Especial de Preventa![cite: 9]</span>
+          }
+          <h2>${{ pelicula().precio_base }}</h2>
+        </div>
+
+        <div class="funciones-seccion">
+          <h3>Funciones Disponibles</h3>
+          @if (funciones().length > 0) {
+            <div class="funciones-grid">
+              @for (fun of funciones(); track fun.id) {
+                <div class="funcion-card">
+                  <div class="funcion-info">
+                    <span class="sala-tag">{{ fun.sala }}</span>
+                    <span class="horario-tag">{{ fun.fecha_hora | date:'dd/MM HH:mm' }}</span>
+                    <span class="format-tag">{{ fun.formato }} • {{ fun.idioma }}</span>
+                    <span class="precio-tag">${{ fun.precio }}</span>
+                  </div>
+                  <button type="button" class="btn-comprar-funcion" (click)="irASeleccionButacas(fun.id)">
+                    Comprar Entrada
+                  </button>
+                </div>
+              }
+            </div>
           } @else {
-            <h2>${{ pelicula().precio_normal }}</h2>
+            <p class="sin-funciones">No hay funciones programadas para esta película aún.</p>
           }
         </div>
 
-        <button class="comprar-btn" (click)="continuarCompra()">Seleccionar Butacas</button>
       </div>
     </div>
+
+    <section class="resenas-section">
+      <h2>Opiniones de la Comunidad</h2>
+
+      <!-- Formulario para dejar reseña[cite: 9] -->
+      <div class="form-resena-box">
+        <h3>Dejar tu Calificación</h3>
+        
+        <div class="rating-input-row">
+          <label>Estrellas:</label>
+          <select [ngModel]="nuevaPuntuacion()" (ngModelChange)="nuevaPuntuacion.set(+$event)">
+            <option [value]="5">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
+            <option [value]="4">⭐⭐⭐⭐ (4 - Muy buena)</option>
+            <option [value]="3">⭐⭐⭐ (3 - Buena)</option>
+            <option [value]="2">⭐⭐ (2 - Regular)</option>
+            <option [value]="1">⭐ (1 - Mala)</option>
+          </select>
+        </div>
+
+        <textarea 
+          placeholder="Escribe un comentario corto sobre la película..." 
+          maxlength="200"
+          [ngModel]="nuevoComentario()" 
+          (ngModelChange)="nuevoComentario.set($event)">
+        </textarea>
+
+        <button 
+          type="button" 
+          class="btn-publicar-resena" 
+          [disabled]="enviandoResena() || !nuevoComentario().trim()" 
+          (click)="enviarResena()">
+          {{ enviandoResena() ? 'Publicando...' : 'Publicar Reseña' }}
+        </button>
+      </div>
+
+      <div class="resenas-list">
+        @for (r of resenas(); track r.id) {
+          <div class="resena-card">
+            <div class="resena-header">
+              <span class="resena-stars">
+                @for (s of [1,2,3,4,5]; track s) {
+                  {{ s <= r.puntuacion ? '⭐' : '☆' }}
+                }
+              </span>
+              <span class="resena-date">{{ r.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <p class="resena-text">"{{ r.comentario }}"</p>
+          </div>
+        } @empty {
+          <p class="empty-resenas">Todavía no hay reseñas para esta película. ¡Sé el primero en dejar una!</p>
+        }
+      </div>
+    </section>
+
   } @else {
     <div class="not-found">No pudimos encontrar la película seleccionada.</div>
   }

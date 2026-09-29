@@ -1,6 +1,7 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { CarritoService } from '../../core/services/carrito.service';
 
 export interface ProductoCandyBar {
   id: string;
@@ -14,63 +15,80 @@ export interface ProductoCandyBar {
 @Component({
   selector: 'app-candybar',
   standalone: true,
-  imports: [CommonModule, RouterLink], // RouterLink agregado aquí
+  imports: [CommonModule, RouterLink],
   templateUrl: './candybar.html',
   styleUrl: './candybar.css'
 })
 export class CandybarComponent implements OnInit {
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private carritoService = inject(CarritoService);
 
+  // Propiedad requerida por el botón "Volver a Selección de Butacas" en candybar.html
   funcionId = signal<string | null>(null);
 
   productos = signal<ProductoCandyBar[]>([
-    { id: '1', nombre: 'Combo Pochoclos + Gaseosa', precio: 6000, imagenUrl: 'assets/combo1.png', categoria: 'Combos', descripcion: 'Pochoclos grandes más gaseosa gigante.' },
-    { id: '2', nombre: 'Gaseosa Mediana', precio: 2500, imagenUrl: 'assets/gaseosa.png', categoria: 'Bebidas', descripcion: 'Gaseosa fría de 500ml.' },
-    { id: '3', nombre: 'Chocolates', precio: 1800, imagenUrl: 'assets/chocolate.png', categoria: 'Dulces', descripcion: 'Barra de chocolate con leche.' }
+    { id: 'c1', nombre: 'Combo Mega (Pochoclos + 2 Gaseosas)', precio: 7500, imagenUrl: 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400', categoria: 'Combos', descripcion: 'Balde gigante de pochoclos y dos gaseosas de 750ml.' },
+    { id: 'c2', nombre: 'Pochoclos Grandes Dulces', precio: 4200, imagenUrl: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?w=400', categoria: 'Pochoclos', descripcion: 'Pochoclos crocantes recién hechos.' },
+    { id: 'c3', nombre: 'Gaseosa Grande 750ml', precio: 2800, imagenUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400', categoria: 'Bebidas', descripcion: 'Gaseosa línea Coca-Cola bien fría.' },
+    { id: 'c4', nombre: 'Nachos con Queso Cheddar Caliente', precio: 5000, imagenUrl: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=400', categoria: 'Snacks', descripcion: 'Crujientes nachos acompañados de dip de queso cheddar.' }
   ]);
 
-  carrito = signal<{ [key: string]: number }>({});
+  carritoCantidades = signal<{ [key: string]: number }>({});
 
   ngOnInit() {
-    this.funcionId.set(this.route.snapshot.paramMap.get('id'));
+    const idUrl = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('funcionId');
+
+    const rawReserva = sessionStorage.getItem('reserva_activa');
+    const reserva = rawReserva ? JSON.parse(rawReserva) : null;
+
+    this.funcionId.set(idUrl || reserva?.funcion_id || '');
   }
 
   obtenerCantidad(prod: ProductoCandyBar): number {
-    return this.carrito()[prod.id] || 0;
+    return this.carritoCantidades()[prod.id] || 0;
   }
 
-  agregarProducto(prod: ProductoCandyBar): void {
-    const actual = this.carrito();
-    this.carrito.set({ ...actual, [prod.id]: (actual[prod.id] || 0) + 1 });
+  agregarProducto(prod: ProductoCandyBar) {
+    const actual = this.carritoCantidades();
+    this.carritoCantidades.set({ ...actual, [prod.id]: (actual[prod.id] || 0) + 1 });
   }
 
-  removerProducto(prod: ProductoCandyBar): void {
-    const actual = this.carrito();
-    const cantidadActual = actual[prod.id] || 0;
-    if (cantidadActual <= 0) return;
-
-    const nuevaEstructura = { ...actual };
-    if (cantidadActual === 1) {
-      delete nuevaEstructura[prod.id];
-    } else {
-      nuevaEstructura[prod.id] = cantidadActual - 1;
-    }
-    this.carrito.set(nuevaEstructura);
+  removerProducto(prod: ProductoCandyBar) {
+    const actual = this.carritoCantidades();
+    const cant = actual[prod.id] || 0;
+    if (cant <= 0) return;
+    const nuevo = { ...actual };
+    if (cant === 1) delete nuevo[prod.id];
+    else nuevo[prod.id] = cant - 1;
+    this.carritoCantidades.set(nuevo);
   }
 
   totalItems = computed(() => {
-    return Object.values(this.carrito()).reduce((acc, qty) => acc + qty, 0);
+    return Object.values(this.carritoCantidades()).reduce((acc, qty) => acc + qty, 0);
   });
 
   subtotalCandy = computed(() => {
-    return Object.entries(this.carrito()).reduce((acc, [id, qty]) => {
-      const producto = this.productos().find(p => p.id === id);
-      return acc + (producto ? producto.precio * qty : 0);
+    return Object.entries(this.carritoCantidades()).reduce((acc, [id, cant]) => {
+      const p = this.productos().find(item => item.id === id);
+      return acc + (p ? p.precio * cant : 0);
     }, 0);
   });
 
-  continuarCompra(): void {
-    this.router.navigate(['/resumen', this.funcionId()]);
+  continuarCompra() {
+    Object.entries(this.carritoCantidades()).forEach(([id, cant]) => {
+      const p = this.productos().find(item => item.id === id);
+      if (p && cant > 0) {
+        this.carritoService.agregarItem({
+          tipo: 'candy',
+          id: p.id,
+          nombre: p.nombre,
+          precio: p.precio,
+          cantidad: cant
+        });
+      }
+    });
+
+    this.router.navigate(['/resumen']);
   }
 }

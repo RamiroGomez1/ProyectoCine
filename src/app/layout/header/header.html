@@ -5,6 +5,10 @@
 
   <nav class="nav-links">
     <a routerLink="/home" routerLinkActive="active">Inicio</a>
+
+    @if (authService.currentUser()) {
+  <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
+  } 
     
     @if (authService.currentUser()) {
       <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
