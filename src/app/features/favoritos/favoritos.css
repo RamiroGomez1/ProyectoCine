@@ -126,3 +126,29 @@ button:hover {
   outline: none;
   border-color: #e50914;
 }
+
+.estrellas-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.estrellas-row label {
+  font-size: 0.85rem;
+  color: #b3b3b3;
+}
+
+.estrellas-row select {
+  background-color: #0b0b10;
+  color: #ffffff;
+  border: 1px solid #333344;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.estrellas-row select:focus {
+  border-color: #e50914;
+}

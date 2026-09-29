@@ -5,13 +5,18 @@
 
   <nav class="nav-links">
     <a routerLink="/home" routerLinkActive="active">Inicio</a>
+    
+    <a routerLink="/proximamente" routerLinkActive="active">Próximamente</a>
 
     @if (authService.currentUser()) {
-  <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
-  } 
-    
-    @if (authService.currentUser()) {
+      <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
       <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
+
+      @if (authService.currentUserData()?.rol === 'empleado' || authService.currentUserData()?.rol === 'admin') {
+        <a routerLink="/empleado/qr-scanner" routerLinkActive="active" class="empleado-badge">
+          Escanear QR
+        </a>
+      }
       
       @if (authService.currentUserData()?.rol === 'admin') {
         <a routerLink="/admin" routerLinkActive="active" class="admin-badge">

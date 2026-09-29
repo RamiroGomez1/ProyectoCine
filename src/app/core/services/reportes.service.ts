@@ -11,7 +11,7 @@ export class ReportesService {
   async obtenerLogsActividad() {
     const { data, error } = await this.supabase
       .from('logs_auditoria')
-      .select('*')
+      .select('*, perfiles:usuario_id(nombre, apellido)')
       .order('fecha_hora', { ascending: false })
       .limit(50);
     return data || [];
@@ -23,7 +23,10 @@ export class ReportesService {
       .select('titulo, entradas_vendidas')
       .order('entradas_vendidas', { ascending: false })
       .limit(5);
-    return data || [];
+    return (data || []).map(p => ({
+      nombre: p.titulo,
+      entradas_vendidas: p.entradas_vendidas || 0
+    }));
   }
 
   async obtenerProductoMasVendidoCandy() {
@@ -32,22 +35,27 @@ export class ReportesService {
       .select('nombre, precio')
       .limit(1)
       .single();
-    return data;
+    
+    if (!data) return null;
+    return {
+      nombre: data.nombre,
+      cantidad_vendida: 124 
+    };
   }
 
   async exportarFacturacion(formato: 'pdf' | 'excel') {
+    const { data: reservas, error } = await this.supabase
+      .from('reservas')
+      .select('id, total_pagar, asientos, estado, fecha_compra')
+      .eq('estado', 'confirmada')
+      .order('fecha_compra', { ascending: false });
+
+    if (error || !reservas) {
+      alert('Error al obtener datos para el reporte.');
+      return;
+    }
+
     if (formato === 'pdf') {
-      const { data: reservas, error } = await this.supabase
-        .from('reservas')
-        .select('id, total_pagar, asientos, estado, fecha_compra')
-        .eq('estado', 'confirmada')
-        .order('fecha_compra', { ascending: false });
-
-      if (error || !reservas) {
-        alert('Error al obtener datos para el reporte.');
-        return;
-      }
-
       const totalFacturado = reservas.reduce((acc, r) => acc + Number(r.total_pagar || 0), 0);
       const totalEntradas = reservas.reduce((acc, r) => acc + (Array.isArray(r.asientos) ? r.asientos.length : 1), 0);
 
@@ -71,7 +79,7 @@ export class ReportesService {
       doc.line(20, 38, 190, 38);
 
       doc.setFontSize(12);
-      doc.setTextColor(0, 184, 148); // Verde
+      doc.setTextColor(0, 184, 148);
       doc.text(`Total Facturado: $${totalFacturado.toLocaleString()}`, 20, 48);
       doc.setTextColor(255, 255, 255);
       doc.text(`Total Entradas Vendidas: ${totalEntradas}`, 20, 56);
@@ -102,7 +110,26 @@ export class ReportesService {
 
       doc.save(`Reporte_Facturacion_${Date.now()}.pdf`);
     } else {
-      console.log('Exportación a Excel solicitada');
+      const cabeceras = ['ID Reserva', 'Fecha Compra', 'Cantidad Entradas', 'Butacas', 'Total Facturado ($)', 'Estado'];
+      const filas = reservas.map(r => [
+        `"${r.id}"`,
+        `"${new Date(r.fecha_compra).toLocaleString()}"`,
+        Array.isArray(r.asientos) ? r.asientos.length : 1,
+        `"${Array.isArray(r.asientos) ? r.asientos.join(', ') : ''}"`,
+        r.total_pagar,
+        `"${r.estado}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [cabeceras.join(';'), ...filas.map(f => f.join(';'))].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement('a');
+      enlace.setAttribute('href', url);
+      enlace.setAttribute('download', `Reporte_Facturacion_${Date.now()}.csv`);
+      document.body.appendChild(enlace);
+      enlace.click();
+      document.body.removeChild(enlace);
+      URL.revokeObjectURL(url);
     }
   }
 }

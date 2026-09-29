@@ -4,8 +4,8 @@ import { DatePipe } from '@angular/common';
 import { ReportesService } from '../../../core/services/reportes.service';
 import { CineService } from '../../../core/services/cine.service';
 import { PeliculasService } from '../../../core/services/pelicula.service';
+import { ProductoService } from '../../../core/services/producto-service';
 import { SupabaseService } from '../../../core/services/supabase.service';
-import { FetchBackend } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -18,6 +18,7 @@ export class AdminDashboardComponent implements OnInit {
   private reportesService = inject(ReportesService);
   private cineService = inject(CineService);
   private peliculaService = inject(PeliculasService);
+  private productoService = inject(ProductoService);
   private supabaseService = inject(SupabaseService);
   private fb = inject(FormBuilder);
 
@@ -83,6 +84,16 @@ export class AdminDashboardComponent implements OnInit {
     porcentajeDescuento: [0, [Validators.min(0), Validators.max(100)]],
     formato: ['', Validators.required],
     idioma: ['', Validators.required]
+  });
+
+  candyForm = this.fb.nonNullable.group({
+    nombre: ['', [Validators.required, Validators.minLength(2)]],
+    descripcion: ['', Validators.required],
+    precio: [3500, [Validators.required, Validators.min(0)]],
+    categoria: ['Combos' as 'Combos' | 'Pochoclos' | 'Bebidas' | 'Golosinas', Validators.required],
+    esCombo: [true],
+    costoEnPuntos: [300, [Validators.required, Validators.min(0)]],
+    imagenUrl: ['']
   });
 
   async ngOnInit() {
@@ -215,7 +226,9 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  async programarFuncion() {
+  fechaMinima = new Date().toISOString().slice(0, 16);
+
+async programarFuncion() {
   if (this.funcionForm.invalid) {
     alert('Completa todos los campos obligatorios de la función.');
     return;
@@ -223,7 +236,15 @@ export class AdminDashboardComponent implements OnInit {
 
   const v = this.funcionForm.getRawValue();
 
-const fechaPlana = v.fechaHoraInicio.replace('T', ' ') + ':00';
+  const fechaSeleccionada = new Date(v.fechaHoraInicio).getTime();
+  const ahora = new Date().getTime();
+
+  if (fechaSeleccionada <= ahora) {
+    alert('No puedes programar una función en una fecha u hora pasada.');
+    return;
+  }
+
+  const fechaPlana = v.fechaHoraInicio.replace('T', ' ') + ':00';
 
   const resultado = await this.cineService.agregarFuncion({
     pelicula_id: v.peliculaId,
@@ -250,6 +271,36 @@ const fechaPlana = v.fechaHoraInicio.replace('T', ' ') + ':00';
     alert(`Error: ${resultado.mensaje}`);
   }
 }
+
+  async guardarProductoCandy() {
+    if (this.candyForm.invalid) return;
+
+    const val = this.candyForm.getRawValue();
+    const res = await this.productoService.crearProductoOCombo({
+      nombre: val.nombre,
+      descripcion: val.descripcion,
+      precio: Number(val.precio),
+      categoria: val.categoria,
+      es_combo: val.categoria === 'Combos' || val.esCombo,
+      costo_en_puntos: Number(val.costoEnPuntos),
+      imagen_url: val.imagenUrl || 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400'
+    });
+
+    if (res.exito) {
+      alert('¡Producto / Combo registrado con éxito en el Candy Bar!');
+      this.candyForm.reset({
+        nombre: '',
+        descripcion: '',
+        precio: 3500,
+        categoria: 'Combos',
+        esCombo: true,
+        costoEnPuntos: 300,
+        imagenUrl: ''
+      });
+    } else {
+      alert(`Error: ${res.mensaje}`);
+    }
+  }
 
   exportarPDF() {
     this.reportesService.exportarFacturacion('pdf');

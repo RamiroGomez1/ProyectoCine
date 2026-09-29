@@ -1,4 +1,3 @@
-// Path: src/app/features/proximamente/proximamente.ts
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { PeliculasService } from '../../core/services/pelicula.service';
 import { AuthService } from '../../core/services/auth.service';

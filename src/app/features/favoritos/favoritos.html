@@ -1,10 +1,10 @@
 <section class="favoritos-container">
-  <h2>⭐ Mis Películas Favoritas</h2>
+  <h2>Mis Películas Favoritas</h2>
 
   @if (favoritosService.cargando()) {
     <p class="loading-state">Cargando tus películas favoritas...</p>
   } @else if (favoritos().length === 0) {
-    <p class="empty-state">No tenes películas favoritas aún. ¡Explora el catálogo y añadi algunas!</p>
+    <p class="empty-state">No tenés películas favoritas aún. ¡Explorá el catálogo y añadí algunas!</p>
   } @else {
     <div class="favoritos-grid">
       @for (fav of favoritos(); track fav.id) {
@@ -12,19 +12,33 @@
           <img [src]="fav.peliculas?.portada_url" [alt]="fav.peliculas?.titulo" class="cover">
           <div class="info">
             <h3>{{ fav.peliculas?.titulo }}</h3>
-            <p class="genero">Género: {{ fav.peliculas?.genero }}</p>
+            <p class="genero">Género: {{ fav.peliculas?.generos?.join ? fav.peliculas?.generos?.join(', ') : fav.peliculas?.generos }}</p>
             
             @if (editandoId !== fav.id) {
-              <p class="nota"><strong>Mi reseña personal:</strong> {{ fav.nota || 'Sin notas asignadas.' }}</p>
+              <p class="nota"><strong>Mi reseña / nota:</strong> {{ fav.nota || 'Sin comentarios asignados.' }}</p>
               <div class="actions">
-                <button class="btn-edit" (click)="iniciarEdicion(fav)"> Editar Reseña</button>
-                <button class="btn-delete" (click)="eliminar(fav.id!)"> Eliminar</button>
+                <button class="btn-edit" (click)="iniciarEdicion(fav)">⭐ Calificar / Reseñar</button>
+                <button class="btn-delete" (click)="eliminar(fav.id!)">Eliminar</button>
               </div>
             } @else {
               <div class="edit-nota-form">
+                <div class="estrellas-row">
+                  <label for="estrellas">Calificación:</label>
+                  <select id="estrellas" [formControl]="estrellasControl">
+                    <option [value]="5">⭐⭐⭐⭐⭐ (5)</option>
+                    <option [value]="4">⭐⭐⭐⭐ (4)</option>
+                    <option [value]="3">⭐⭐⭐ (3)</option>
+                    <option [value]="2">⭐⭐ (2)</option>
+                    <option [value]="1">⭐ (1)</option>
+                  </select>
+                </div>
+
                 <input type="text" [formControl]="notaControl" placeholder="Escribe tu opinión sobre esta película...">
+                
                 <div class="actions">
-                  <button class="btn-save" (click)="guardarNota(fav.id!)" [disabled]="notaControl.invalid">Guardar</button>
+                  <button class="btn-save" (click)="guardarNotaYResena(fav)" [disabled]="notaControl.invalid">
+                    Guardar Reseña
+                  </button>
                   <button class="btn-cancel" (click)="cancelarEdicion()">Cancelar</button>
                 </div>
               </div>

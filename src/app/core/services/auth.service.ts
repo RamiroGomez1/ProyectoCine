@@ -1,4 +1,3 @@
-// src/app/core/services/auth.service.ts
 import { Injectable, signal, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { User, Session } from '@supabase/supabase-js';
@@ -12,7 +11,7 @@ export class AuthService {
 
   currentUser = signal<User | null>(null);
   currentSession = signal<Session | null>(null);
-  currentUserData = signal<Usuario | null>(null); 
+  currentUserData = signal<Usuario | null>(null);
   constructor() {
     this.initAuthSession();
   }
@@ -47,22 +46,34 @@ export class AuthService {
     if (error) {
       console.error('Error al cargar datos del usuario:', error.message);
     } else if (data) {
-      this.currentUserData.set(data as Usuario);
+      const usuarioMapeado: Usuario = {
+        id: data.id,
+        email: data.email || '',
+        nombre: data.nombre || '',
+        apellido: data.apellido || '',
+        fechaNacimiento: data.fecha_nacimiento || data.fechaNacimiento || '',
+        tipoSangre: data.tipo_sangre || data.tipoSangre || '',
+        colorOjos: data.color_ojos || data.colorOjos || '',
+        diasVacaciones: Number(data.dias_vacaciones ?? data.diasVacaciones ?? 0),
+        puntosFidelidad: Number(data.puntos_fidelidad ?? data.puntosFidelidad ?? 0),
+        saldoFavor: Number(data.saldo_favor ?? data.saldoFavor ?? 0),
+        rol: data.rol || 'cliente'
+      };
+      this.currentUserData.set(usuarioMapeado);
     }
   }
-
   async signUp(email: string, password: string, nombre: string, apellido: string) {
-  return this.supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        nombre: nombre,
-        apellido: apellido
+    return this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          nombre: nombre,
+          apellido: apellido
+        }
       }
-    }
-  });
-}
+    });
+  }
 
   async signIn(email: string, password: string) {
     const response = await this.supabase.auth.signInWithPassword({ email, password });

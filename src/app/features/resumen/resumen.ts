@@ -6,6 +6,7 @@ import { CuponesService } from '../../core/services/cupones.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { PdfService } from '../../core/services/pdf.service';
+import { FidelizacionService } from '../../core/services/fidelizacion.service';
 import * as QRCode from 'qrcode';
 
 @Component({
@@ -18,15 +19,18 @@ import * as QRCode from 'qrcode';
 export class ResumenComponent implements OnInit {
   carritoService = inject(CarritoService);
   private cuponesService = inject(CuponesService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private supabase = inject(SupabaseService).client;
   private pdfService = inject(PdfService);
+  private fidelizacionService = inject(FidelizacionService);
   private router = inject(Router);
 
   reservaData = signal<any>(null);
   codigoCupon = signal('');
   descuentoAplicado = signal(0);
   mensajeCupon = signal('');
+
+  usarSaldoFavor = signal(false);
 
   puedeComprar = signal(true);
   mensajeRestriccion = signal('');
@@ -35,8 +39,19 @@ export class ResumenComponent implements OnInit {
   qrCodigoRaw = signal<string>('');
   cargandoPago = signal(false);
 
+  saldoDisponible = computed(() => {
+    return Number(this.authService.currentUserData()?.saldoFavor || 0);
+  });
+
+  descuentoSaldo = computed(() => {
+    if (!this.usarSaldoFavor()) return 0;
+    const subtotalTrasCupon = Math.max(0, this.carritoService.total() - this.descuentoAplicado());
+    return Math.min(this.saldoDisponible(), subtotalTrasCupon);
+  });
+
   totalPagar = computed(() => {
-    return Math.max(0, this.carritoService.total() - this.descuentoAplicado());
+    const subtotal = this.carritoService.total() - this.descuentoAplicado();
+    return Math.max(0, subtotal - this.descuentoSaldo());
   });
 
   ngOnInit() {
@@ -61,7 +76,7 @@ export class ResumenComponent implements OnInit {
 
     if (!user) {
       this.puedeComprar.set(false);
-      this.mensajeRestriccion.set(`Película +${restriccion}. Iniciá sesión para verificar tu edad.`); //[cite: 3, 9]
+      this.mensajeRestriccion.set(`Película +${restriccion}. Iniciá sesión para verificar tu edad.`);
       return;
     }
 
@@ -74,7 +89,7 @@ export class ResumenComponent implements OnInit {
     const edad = this.cuponesService.calcularEdad(user.fechaNacimiento);
     if (edad < restriccion) {
       this.puedeComprar.set(false);
-      this.mensajeRestriccion.set(`Compra bloqueada: Tenés ${edad} años y la película requiere ser mayor de ${restriccion} años.`); //[cite: 3, 9]
+      this.mensajeRestriccion.set(`Compra bloqueada: Tenés ${edad} años y la película requiere ser mayor de ${restriccion} años.`);
     }
   }
 
@@ -86,80 +101,94 @@ export class ResumenComponent implements OnInit {
   }
 
   async confirmarCompra() {
-  if (!this.puedeComprar() || this.cargandoPago()) return;
+    if (!this.puedeComprar() || this.cargandoPago()) return;
 
-  this.cargandoPago.set(true);
-  const user = this.authService.currentUser();
-  const data = this.reservaData();
-  const total = this.totalPagar();
+    this.cargandoPago.set(true);
+    const user = this.authService.currentUser();
+    const data = this.reservaData();
+    const total = this.totalPagar();
+    const descuentoSaldoUsado = this.descuentoSaldo();
 
-  const itemsCandy = this.carritoService.items()
-    .filter(i => i.tipo === 'candy')
-    .map(i => ({ nombre: i.nombre, cantidad: i.cantidad }));
+    const itemsCandy = this.carritoService.items()
+      .filter(i => i.tipo === 'candy')
+      .map(i => ({ nombre: i.nombre, cantidad: i.cantidad }));
 
-  const qrCodigo = `TICKET-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-  this.qrCodigoRaw.set(qrCodigo);
+    const qrCodigo = `TICKET-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+    this.qrCodigoRaw.set(qrCodigo);
 
-  try {
-    if (data?.asientos && data.asientos.length > 0) {
-      await this.supabase
+    try {
+      if (data?.asientos && data.asientos.length > 0) {
+        await this.supabase
+          .from('reservas')
+          .delete()
+          .eq('funcion_id', data.funcion_id)
+          .eq('estado', 'bloqueada')
+          .in('asientos', data.asientos);
+      }
+
+      const { error: resError } = await this.supabase
         .from('reservas')
-        .delete()
-        .eq('funcion_id', data.funcion_id)
-        .eq('estado', 'bloqueada')
-        .in('asientos', data.asientos);
+        .insert([
+          {
+            funcion_id: data.funcion_id,
+            usuario_id: user?.id || null,
+            asientos: data.asientos,
+            total_pagar: total,
+            qr_codigo: qrCodigo,
+            estado: 'confirmada',
+            fecha_compra: new Date().toISOString()
+          }
+        ]);
+
+      if (resError) throw resError;
+
+      if (user && descuentoSaldoUsado > 0) {
+        const nuevoSaldo = Math.max(0, this.saldoDisponible() - descuentoSaldoUsado);
+        await this.supabase
+          .from('usuarios')
+          .update({ saldo_favor: nuevoSaldo })
+          .eq('id', user.id);
+      }
+
+      if (user && total > 0) {
+        await this.fidelizacionService.sumarPuntos(user.id, total);
+        await this.authService.cargarDatosUsuario(user.id);
+      }
+
+      const { data: peliActual } = await this.supabase
+        .from('peliculas')
+        .select('entradas_vendidas')
+        .eq('id', data.pelicula.id)
+        .single();
+
+      const totalVendidas = (peliActual?.entradas_vendidas || 0) + (data.asientos?.length || 1);
+      await this.supabase
+        .from('peliculas')
+        .update({ entradas_vendidas: totalVendidas })
+        .eq('id', data.pelicula.id);
+
+      const urlQR = await QRCode.toDataURL(qrCodigo, { width: 250, margin: 1 });
+      this.qrGenerado.set(urlQR);
+
+      await this.pdfService.generarTicketPDF({
+        tituloPelicula: data?.pelicula?.titulo || 'Película',
+        sala: data?.sala || 'Sala General',
+        fechaHora: data?.fecha_hora || new Date().toLocaleString(),
+        asientos: data?.asientos || [],
+        total: total,
+        qrCodigo: qrCodigo,
+        itemsCandy: itemsCandy
+      });
+
+      this.carritoService.limpiarCarrito();
+
+    } catch (err: any) {
+      console.error('Error al procesar compra o descargar PDF:', err);
+      alert(`Error: ${err.message || 'No se pudo completar la compra'}`);
+    } finally {
+      this.cargandoPago.set(false);
     }
-
-    const { error: resError } = await this.supabase
-      .from('reservas')
-      .insert([
-        {
-          funcion_id: data.funcion_id,
-          usuario_id: user?.id || null,
-          asientos: data.asientos,
-          total_pagar: total,
-          qr_codigo: qrCodigo,
-          estado: 'confirmada',
-          fecha_compra: new Date().toISOString()
-        }
-      ]);
-
-    if (resError) throw resError;
-
-    const { data: peliActual } = await this.supabase
-      .from('peliculas')
-      .select('entradas_vendidas')
-      .eq('id', data.pelicula.id)
-      .single();
-
-    const totalVendidas = (peliActual?.entradas_vendidas || 0) + (data.asientos?.length || 1);
-    await this.supabase
-      .from('peliculas')
-      .update({ entradas_vendidas: totalVendidas })
-      .eq('id', data.pelicula.id);
-
-    const urlQR = await QRCode.toDataURL(qrCodigo, { width: 250, margin: 1 });
-    this.qrGenerado.set(urlQR);
-
-    await this.pdfService.generarTicketPDF({
-      tituloPelicula: data?.pelicula?.titulo || 'Película',
-      sala: data?.sala || 'Sala General',
-      fechaHora: data?.fecha_hora || new Date().toLocaleString(),
-      asientos: data?.asientos || [],
-      total: total,
-      qrCodigo: qrCodigo,
-      itemsCandy: itemsCandy
-    });
-
-    this.carritoService.limpiarCarrito();
-
-  } catch (err: any) {
-    console.error('Error al procesar compra o descargar PDF:', err);
-    alert(`Error: ${err.message || 'No se pudo completar la compra'}`);
-  } finally {
-    this.cargandoPago.set(false);
   }
-}
 
   descargarTicketPDF() {
     const data = this.reservaData();

@@ -12,7 +12,16 @@
       >
       
       <div class="detail-info">
-        <h1>{{ pelicula().titulo }}</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <h1>{{ pelicula().titulo }}</h1>
+          
+          <button 
+            type="button" 
+            (click)="agregarAFavoritos()" 
+            style="background: #f39c12; color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+            ⭐ Guardar en Favoritos
+          </button>
+        </div>
         
         <div class="rating">
           ⭐ {{ promedioResenas() }} / 5.0 

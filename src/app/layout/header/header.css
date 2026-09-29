@@ -68,3 +68,14 @@
   background-color: #e50914 !important;
   color: #ffffff !important;
 }
+
+.empleado-badge {
+  background-color: rgba(0, 184, 148, 0.2) !important;
+  color: #00b894 !important;
+  border: 1px solid #00b894 !important;
+}
+
+.empleado-badge:hover {
+  background-color: #00b894 !important;
+  color: #ffffff !important;
+}

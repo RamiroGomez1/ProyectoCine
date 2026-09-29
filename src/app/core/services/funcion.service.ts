@@ -1,4 +1,3 @@
-// Path: [Notebook sources]/src/app/core/services/funcion.service.ts
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service'; // Ajusta la ruta a tu servicio de supabase[cite: 4]
 

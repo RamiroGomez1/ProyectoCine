@@ -1,6 +1,3 @@
-/* src/app/features/seat-selection/seat-selection.css */
-
-/* Contenedor principal que envuelve toda la sala sin desbordes */
 .seats-container, 
 .sala-container {
   display: flex;

@@ -1,27 +1,52 @@
-export interface Combo {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  precio_fijo: number;
-  productos_incluidos: number[]; // IDs de los productos
-}
+import { Injectable, inject } from '@angular/core';
+import { SupabaseService } from './supabase.service';
+import { ProductoCandyBar } from '../models/producto.candybar.interface';
 
-export async function crearCombo(this: any, nombre: string, descripcion: string, precio_fijo: number, productos_ids: number[]): Promise<Combo> {
+@Injectable({
+  providedIn: 'root'
+})
+export class ProductoService {
+  private supabase = inject(SupabaseService).client;
+
+  async obtenerProductos(): Promise<ProductoCandyBar[]> {
     const { data, error } = await this.supabase
-    .from("combos")
-    .insert({ 
-        nombre,
-        descripcion,
-        precio_fijo, // Precio fijo configurable por el admin[cite: 7]
-        productos_incluidos: productos_ids
-    })
-    .select()
-    .single();
+      .from('productos_candy')
+      .select('*')
+      .order('nombre', { ascending: true });
 
     if (error) {
-        throw error;
+      console.error('Error al obtener productos de candy:', error.message);
+      return [];
     }
 
-    return data as Combo;
-}
+    return (data || []).map((p: any) => ({
+      id: p.id,
+      nombre: p.nombre,
+      descripcion: p.descripcion,
+      precio: Number(p.precio),
+      imagenUrl: p.imagen_url || 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400',
+      categoria: p.categoria,
+      esCombo: Boolean(p.es_combo),
+      costoEnPuntos: p.costo_en_puntos ?? 0
+    }));
+  }
 
+  async crearProductoOCombo(producto: {
+    nombre: string;
+    descripcion: string;
+    precio: number;
+    categoria: 'Combos' | 'Pochoclos' | 'Bebidas' | 'Golosinas';
+    es_combo: boolean;
+    costo_en_puntos?: number;
+    imagen_url?: string;
+  }): Promise<{ exito: boolean; mensaje?: string }> {
+    const { error } = await this.supabase
+      .from('productos_candy')
+      .insert([producto]);
+
+    if (error) {
+      return { exito: false, mensaje: error.message };
+    }
+    return { exito: true };
+  }
+}

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { authAdminGuard } from './core/guards/auth-admin.guard';
+import { authEmpleadoGuard } from './core/guards/auth-empleado.guard';
 
 export const routes: Routes = [
   { 
@@ -54,6 +55,15 @@ export const routes: Routes = [
   { 
     path: 'resumen', 
     loadComponent: () => import('./features/resumen/resumen').then(m => m.ResumenComponent) 
+  },
+  { 
+    path: 'proximamente', 
+    loadComponent: () => import('./features/proximamente/proximamente').then(m => m.ProximamenteComponent) 
+  },
+  { 
+    path: 'empleado/qr-scanner', 
+    loadComponent: () => import('./features/empleado/qr-scan').then(m => m.QrScannerComponent), 
+    canActivate: [authEmpleadoGuard]
   },
   { 
     path: '**', 

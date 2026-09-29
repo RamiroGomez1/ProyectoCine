@@ -6,6 +6,7 @@ import { PeliculasService } from '../../core/services/pelicula.service';
 import { ResenasService, ResenaItem } from '../../core/services/resenas.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FavoritosService } from '../../core/services/favoritos.service';
 
 @Component({
   selector: 'app-movie-detail',
@@ -21,6 +22,7 @@ export class MovieDetailComponent implements OnInit {
   private resenasService = inject(ResenasService);
   private authService = inject(AuthService);
   private supabase = inject(SupabaseService).client;
+  private favoritosService = inject(FavoritosService); 
 
   pelicula = signal<any>(null);
   funciones = signal<any[]>([]);
@@ -43,30 +45,43 @@ export class MovieDetailComponent implements OnInit {
     }
   }
 
-  async cargarPeliculaYResenas(id: string) {
-    try {
-      const [peliculaData, datosResenas] = await Promise.all([
-        this.peliculaService.obtenerPeliculaPorId(id),
-        this.resenasService.obtenerResenasPorPelicula(id)
-      ]);
+  async agregarAFavoritos() {
+    const peli = this.pelicula();
+    if (!peli) return;
 
-      this.pelicula.set(peliculaData);
-      this.resenas.set(datosResenas.resenas);
-      this.promedioResenas.set(datosResenas.promedio);
-
-      const { data: funcionesData } = await this.supabase
-        .from('funciones')
-        .select('*')
-        .eq('pelicula_id', id)
-        .order('fecha_hora', { ascending: true });
-
-      this.funciones.set(funcionesData || []);
-    } catch (error) {
-      console.error('Error al cargar datos:', error);
-    } finally {
-      this.cargando.set(false);
-    }
+    await this.favoritosService.agregarFavorito({
+      pelicula_id: peli.id,
+      nota: ''
+    });
   }
+  
+async cargarPeliculaYResenas(id: string) {
+  try {
+    const [peliculaData, datosResenas] = await Promise.all([
+      this.peliculaService.obtenerPeliculaPorId(id),
+      this.resenasService.obtenerResenasPorPelicula(id)
+    ]);
+
+    this.pelicula.set(peliculaData);
+    this.resenas.set(datosResenas.resenas);
+    this.promedioResenas.set(datosResenas.promedio);
+
+    const ahora = new Date().toISOString();
+
+    const { data: funcionesData } = await this.supabase
+      .from('funciones')
+      .select('*')
+      .eq('pelicula_id', id)
+      .gte('fecha_hora', ahora) 
+      .order('fecha_hora', { ascending: true });
+
+    this.funciones.set(funcionesData || []);
+  } catch (error) {
+    console.error('Error al cargar datos:', error);
+  } finally {
+    this.cargando.set(false);
+  }
+}
 
   irASeleccionButacas(funcionId: string) {
     this.router.navigate(['/reserva', funcionId]);

@@ -4,21 +4,17 @@
   @if (qrGenerado()) {
   <div class="ticket-confirmado">
     <h3>¡Compra Confirmada con Éxito!</h3>
-    <p class="subtitle">Presentá este código QR en la entrada o descargá tu
-      ticket en PDF.</p>
+    <p class="subtitle">Presentá este código QR en la entrada o descargá tu ticket en PDF.</p>
 
     <div class="qr-box">
       <img [src]="qrGenerado()" alt="Código QR de la entrada">
     </div>
 
-    <div
-      style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
-      <button type="button" class="btn-coupon"
-        style="background-color: #27ae60;" (click)="descargarTicketPDF()">
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+      <button type="button" class="btn-coupon" style="background-color: #27ae60;" (click)="descargarTicketPDF()">
         📥 Descargar Entrada (PDF)
       </button>
-      <a routerLink="/home" class="btn-back"
-        style="margin-bottom: 0; align-self: center;">Volver a Cartelera</a>
+      <a routerLink="/home" class="btn-back" style="margin-bottom: 0; align-self: center;">Volver a Cartelera</a>
     </div>
   </div>
   } @else {
@@ -30,8 +26,7 @@
 
   @if (reservaData()?.pelicula?.clasificacion_edad >= 13) {
   <div class="alerta-info">
-    Toda entrada para esta película requiere que los menores ingresen
-    acompañados por un adulto.
+    Toda entrada para esta película requiere que los menores ingresen acompañados por un adulto.
   </div>
   }
 
@@ -45,19 +40,34 @@
   </div>
 
   <div class="cupon-section">
-    <input type="text" [ngModel]="codigoCupon()"
-      (ngModelChange)="codigoCupon.set($event)"
-      placeholder="Cupón (ej: PRIMERACOMPRA)">
+    <input type="text" [ngModel]="codigoCupon()" (ngModelChange)="codigoCupon.set($event)" placeholder="Cupón (ej: PRIMERACOMPRA)">
     <button (click)="aplicarCupon()">Aplicar</button>
     @if (mensajeCupon()) {
     <p>{{ mensajeCupon() }}</p>
     }
   </div>
 
+  <!-- Saldo a favor disponible -->
+  @if (saldoDisponible() > 0) {
+    <div class="cupon-section" style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <strong>Tenés ${{ saldoDisponible() }} de saldo a favor</strong>
+        <p style="margin: 0; font-size: 0.85rem; color: #8c8c9e;">Podés usarlo para cubrir parte o el total de tu compra.</p>
+      </div>
+      <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+        <input type="checkbox" [checked]="usarSaldoFavor()" (change)="usarSaldoFavor.set(!usarSaldoFavor())">
+        <span>Aplicar saldo</span>
+      </label>
+    </div>
+  }
+
   <div class="totales">
     <p>Subtotal: ${{ carritoService.total() }}</p>
     @if (descuentoAplicado() > 0) {
-    <p class="descuento">Descuento aplicado: -${{ descuentoAplicado() }}</p>
+      <p class="descuento">Cupón de descuento: -${{ descuentoAplicado() }}</p>
+    }
+    @if (descuentoSaldo() > 0) {
+      <p class="descuento" style="color: #f1c40f;">Saldo a favor aplicado: -${{ descuentoSaldo() }}</p>
     }
     <h3>Total a Pagar: ${{ totalPagar() }}</h3>
   </div>
@@ -66,8 +76,7 @@
     class="btn-comprar"
     [disabled]="!puedeComprar() || cargandoPago() || carritoService.items().length === 0"
     (click)="confirmarCompra()">
-    {{ cargandoPago() ? 'Generando Ticket...' : 'Confirmar Compra y Generar QR'
-    }}
+    {{ cargandoPago() ? 'Generando Ticket...' : 'Confirmar Compra y Generar QR' }}
   </button>
   }
 </div>
