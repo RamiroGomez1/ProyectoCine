@@ -10,9 +10,10 @@ export interface Favorito {
   peliculas?: {
     id: string;
     titulo: string;
-    genero: string;
+    genero?: string;
+    generos?: string[];
     portada_url: string;
-    estreno: boolean;
+    estreno?: boolean;
   };
 }
 

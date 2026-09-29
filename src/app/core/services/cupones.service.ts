@@ -10,7 +10,6 @@ export class CuponesService {
 
     if (codigo === 'PRIMERACOMPRA') {
        if (!usuario) return { valido: false, descuento: 0, mensaje: 'Debes registrarte para usar este cupón.' };
-       // Aquí podrías validar contra Supabase si el usuario ya tiene reservas previas
        return { valido: true, descuento: total * 0.20, mensaje: '¡20% de descuento aplicado en tu primera compra!' };
     }
 

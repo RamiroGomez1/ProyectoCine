@@ -85,7 +85,6 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
     const ocupados = new Set<string>();
     if (reservas) {
       reservas.forEach(r => {
-        // Asientos reservados por otros usuarios se bloquean[cite: 3, 9]
         if (r.usuario_id !== user?.id && Array.isArray(r.asientos)) {
           r.asientos.forEach((a: string) => ocupados.add(a));
         }
@@ -128,7 +127,7 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
   generarSala(ocupados: Set<string>): Butaca[][] {
     const filas = ['A','B','C','D','E','F','G','H','I','J-K','L','M','N','O','P','Q','R','S','T'];
     const distribucionNormal = [4, 20, 4];
-    const distribucionDiscapacidad = [2, 10, 2]; //[cite: 3, 9]
+    const distribucionDiscapacidad = [2, 10, 2]; 
     const base = this.precioBase();
 
     let matriz: Butaca[][] = [];
@@ -137,7 +136,7 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
       let filaActual: Butaca[] = [];
       let numAsiento = 1;
       const esAccesible = letra === 'J-K';
-      const esVip = ['R', 'S', 'T'].includes(letra); //[cite: 3, 9]
+      const esVip = ['R', 'S', 'T'].includes(letra); 
 
       const tipo: 'normal' | 'discapacidad' | 'vip' = esAccesible ? 'discapacidad' : esVip ? 'vip' : 'normal';
       const distribucion = esAccesible ? distribucionDiscapacidad : distribucionNormal;

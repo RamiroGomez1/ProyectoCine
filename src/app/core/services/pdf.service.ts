@@ -96,7 +96,7 @@ export class PdfService {
       doc.setFontSize(7.5);
       doc.setFont('helvetica', 'normal');
       doc.text(datos.qrCodigo, 52.5, yQr + qrSize + 5, { align: 'center' });
-      doc.text('Presentá este código en Sala y Candy Bar', 52.5, yQr + qrSize + 9, { align: 'center' }); //[cite: 9]
+      doc.text('Presentá este código en Sala y Candy Bar', 52.5, yQr + qrSize + 9, { align: 'center' }); 
 
     } catch (err) {
       console.error('Error al generar código QR en PDF:', err);

@@ -1,4 +1,3 @@
-// src/app/core/services/cine.service.ts
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 

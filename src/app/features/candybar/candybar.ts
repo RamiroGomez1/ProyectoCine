@@ -2,15 +2,8 @@ import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { CarritoService } from '../../core/services/carrito.service';
-
-export interface ProductoCandyBar {
-  id: string;
-  nombre: string;
-  precio: number;
-  imagenUrl: string;   
-  categoria: string;   
-  descripcion: string; 
-}
+import { ProductoService } from '../../core/services/producto-service';
+import { ProductoCandyBar } from '../../core/models/producto.candybar.interface';
 
 @Component({
   selector: 'app-candybar',
@@ -23,26 +16,33 @@ export class CandybarComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private carritoService = inject(CarritoService);
+  private productoService = inject(ProductoService);
 
-  // Propiedad requerida por el botón "Volver a Selección de Butacas" en candybar.html
   funcionId = signal<string | null>(null);
-
-  productos = signal<ProductoCandyBar[]>([
-    { id: 'c1', nombre: 'Combo Mega (Pochoclos + 2 Gaseosas)', precio: 7500, imagenUrl: 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400', categoria: 'Combos', descripcion: 'Balde gigante de pochoclos y dos gaseosas de 750ml.' },
-    { id: 'c2', nombre: 'Pochoclos Grandes Dulces', precio: 4200, imagenUrl: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?w=400', categoria: 'Pochoclos', descripcion: 'Pochoclos crocantes recién hechos.' },
-    { id: 'c3', nombre: 'Gaseosa Grande 750ml', precio: 2800, imagenUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400', categoria: 'Bebidas', descripcion: 'Gaseosa línea Coca-Cola bien fría.' },
-    { id: 'c4', nombre: 'Nachos con Queso Cheddar Caliente', precio: 5000, imagenUrl: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=400', categoria: 'Snacks', descripcion: 'Crujientes nachos acompañados de dip de queso cheddar.' }
-  ]);
+  productos = signal<ProductoCandyBar[]>([]);
+  cargando = signal(true);
 
   carritoCantidades = signal<{ [key: string]: number }>({});
 
-  ngOnInit() {
+  async ngOnInit() {
     const idUrl = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('funcionId');
-
     const rawReserva = sessionStorage.getItem('reserva_activa');
     const reserva = rawReserva ? JSON.parse(rawReserva) : null;
-
     this.funcionId.set(idUrl || reserva?.funcion_id || '');
+
+    await this.cargarProductosDesdeDB();
+  }
+
+  async cargarProductosDesdeDB() {
+    this.cargando.set(true);
+    try {
+      const data = await this.productoService.obtenerProductos();
+      this.productos.set(data);
+    } catch (error) {
+      console.error('Error al cargar productos del Candy Bar:', error);
+    } finally {
+      this.cargando.set(false);
+    }
   }
 
   obtenerCantidad(prod: ProductoCandyBar): number {

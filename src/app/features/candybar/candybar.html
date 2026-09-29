@@ -1,32 +1,38 @@
 <div class="candybar-container">
-<a [routerLink]="funcionId() ? ['/reserva', funcionId()] : ['/home']" class="btn-back">
-  ⬅ Volver a Selección de Butacas
-</a>  
+  <a [routerLink]="funcionId() ? ['/reserva', funcionId()] : ['/home']" class="btn-back">
+    ⬅ Volver a Selección de Butacas
+  </a>  
   <h2>Candy Bar</h2>
   <p class="subtitle">¡Acompañá tu película con los mejores combos y pochoclos!</p>
 
-  <div class="candybar-grid">
-    @for (prod of productos(); track prod.id) {
-      <div class="candy-card">
-        <div class="candy-image">
-          <img [src]="prod.imagenUrl" [alt]="prod.nombre" />
-        </div>
-        
-        <div class="candy-body">
-          <span class="candy-badge">{{ prod.categoria }}</span>
-          <h3>{{ prod.nombre }}</h3>
-          <p class="candy-desc">{{ prod.descripcion }}</p>
-          <p class="candy-price">${{ prod.precio }}</p>
+  @if (cargando()) {
+    <p style="text-align: center; color: #8c8c9e; padding: 2rem 0;">Cargando productos del Candy Bar...</p>
+  } @else {
+    <div class="candybar-grid">
+      @for (prod of productos(); track prod.id) {
+        <div class="candy-card">
+          <div class="candy-image">
+            <img [src]="prod.imagenUrl" [alt]="prod.nombre" />
+          </div>
           
-          <div class="counter-container">
-            <button class="btn-counter" (click)="removerProducto(prod)" [disabled]="(obtenerCantidad(prod) === 0)">-</button>
-            <span class="counter-value">{{ obtenerCantidad(prod) }}</span>
-            <button class="btn-counter" (click)="agregarProducto(prod)">+</button>
+          <div class="candy-body">
+            <span class="candy-badge">{{ prod.categoria }}</span>
+            <h3>{{ prod.nombre }}</h3>
+            <p class="candy-desc">{{ prod.descripcion }}</p>
+            <p class="candy-price">${{ prod.precio }}</p>
+            
+            <div class="counter-container">
+              <button class="btn-counter" (click)="removerProducto(prod)" [disabled]="(obtenerCantidad(prod) === 0)">-</button>
+              <span class="counter-value">{{ obtenerCantidad(prod) }}</span>
+              <button class="btn-counter" (click)="agregarProducto(prod)">+</button>
+            </div>
           </div>
         </div>
-      </div>
-    }
-  </div>
+      } @empty {
+        <p style="color: #8c8c9e;">No hay productos cargados en el Candy Bar actualmente.</p>
+      }
+    </div>
+  }
 
   <div class="summary-bar">
     <div class="summary-info">

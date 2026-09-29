@@ -12,8 +12,8 @@
           <img [src]="fav.peliculas?.portada_url" [alt]="fav.peliculas?.titulo" class="cover">
           <div class="info">
             <h3>{{ fav.peliculas?.titulo }}</h3>
-            <p class="genero">Género: {{ fav.peliculas?.generos?.join ? fav.peliculas?.generos?.join(', ') : fav.peliculas?.generos }}</p>
-            
+            <p class="genero">Género: {{ fav.peliculas?.genero }}</p>      
+                  
             @if (editandoId !== fav.id) {
               <p class="nota"><strong>Mi reseña / nota:</strong> {{ fav.nota || 'Sin comentarios asignados.' }}</p>
               <div class="actions">

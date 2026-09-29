@@ -7,7 +7,6 @@ export class FuncionService {
 
   async validarDisponibilidadSala(salaId: string, horaInicioNueva: Date, duracionMinutos: number): Promise<boolean> {
     const horaFinNueva = new Date(horaInicioNueva.getTime() + duracionMinutos * 60000);
-    // Agregamos los 30 minutos de margen de limpieza
     const horaFinConMargen = new Date(horaFinNueva.getTime() + 30 * 60000);
 
     const { data: funciones, error } = await this.supabase
