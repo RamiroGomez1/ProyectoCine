@@ -31,6 +31,9 @@ export class ResumenComponent implements OnInit {
   mensajeCupon = signal('');
 
   usarSaldoFavor = signal(false);
+  usarPuntos = signal(false);
+
+  readonly VALOR_PUNTO = 0.1;
 
   puedeComprar = signal(true);
   mensajeRestriccion = signal('');
@@ -43,15 +46,27 @@ export class ResumenComponent implements OnInit {
     return Number(this.authService.currentUserData()?.saldoFavor || 0);
   });
 
+  puntosDisponibles = computed(() => {
+    return Number(this.authService.currentUserData()?.puntosFidelidad || 0);
+  });
+
   descuentoSaldo = computed(() => {
     if (!this.usarSaldoFavor()) return 0;
     const subtotalTrasCupon = Math.max(0, this.carritoService.total() - this.descuentoAplicado());
     return Math.min(this.saldoDisponible(), subtotalTrasCupon);
   });
 
+  descuentoPuntos = computed(() => {
+    if (!this.usarPuntos()) return 0;
+    const maxDescuento = this.puntosDisponibles() * this.VALOR_PUNTO;
+    const subtotalPendiente = Math.max(0, this.carritoService.total() - this.descuentoAplicado() - this.descuentoSaldo());
+    return Math.min(maxDescuento, subtotalPendiente);
+  });
+
   totalPagar = computed(() => {
     const subtotal = this.carritoService.total() - this.descuentoAplicado();
-    return Math.max(0, subtotal - this.descuentoSaldo());
+    const subtotalConSaldo = Math.max(0, subtotal - this.descuentoSaldo());
+    return Math.max(0, subtotalConSaldo - this.descuentoPuntos());
   });
 
   ngOnInit() {
@@ -108,6 +123,7 @@ export class ResumenComponent implements OnInit {
     const data = this.reservaData();
     const total = this.totalPagar();
     const descuentoSaldoUsado = this.descuentoSaldo();
+    const puntosCanjeados = Math.ceil(this.descuentoPuntos() / this.VALOR_PUNTO);
 
     const itemsCandy = this.carritoService.items()
       .filter(i => i.tipo === 'candy')
@@ -141,6 +157,10 @@ export class ResumenComponent implements OnInit {
         ]);
 
       if (resError) throw resError;
+
+      if (user && puntosCanjeados > 0) {
+        await this.fidelizacionService.descontarPuntos(user.id, puntosCanjeados);
+      }
 
       if (user && descuentoSaldoUsado > 0) {
         const nuevoSaldo = Math.max(0, this.saldoDisponible() - descuentoSaldoUsado);

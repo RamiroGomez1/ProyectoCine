@@ -92,4 +92,33 @@ export class FidelizacionService {
 
     return true;
   }
+
+  async descontarPuntos(userId: string, puntosADescontar: number): Promise<void> {
+  if (puntosADescontar <= 0) return;
+
+  const { data: usuario, error: fetchError } = await this.supabase
+    .from('usuarios')
+    .select('puntos_fidelidad')
+    .eq('id', userId)
+    .single();
+
+  if (fetchError || !usuario) {
+    throw new Error('Error al obtener los puntos del usuario.');
+  }
+
+  const saldoActual = usuario.puntos_fidelidad || 0;
+  if (saldoActual < puntosADescontar) {
+    throw new Error('Puntos insuficientes para realizar el canje.');
+  }
+
+  const { error: updateError } = await this.supabase
+    .from('usuarios')
+    .update({ puntos_fidelidad: saldoActual - puntosADescontar })
+    .eq('id', userId);
+
+  if (updateError) {
+    throw new Error('Error al actualizar los puntos de fidelidad.');
+  }
+}
+
 }

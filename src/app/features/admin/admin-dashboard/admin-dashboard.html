@@ -1,272 +1,301 @@
 <div class="admin-container">
-  <h1>Panel de Control Administrativo</h1>
+  <h1>
+    @if (authService.currentUserData()?.rol === 'admin') {
+      Panel de Control Administrativo
+    } @else {
+      Panel de Gestión Operativa 
+    }
+  </h1>
 
   @if (cargando()) {
-  <p>Cargando panel y métricas del sistema...</p>
+    <p>Cargando panel y métricas del sistema...</p>
   } @else {
-  <div class="metricas-grid">
+    <div class="metricas-grid">
 
-    <section class="card">
-      <h2>Registrar Nueva Película</h2>
-      <form [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()">
+      @if (authService.currentUserData()?.rol === 'admin') {
+        <section class="card">
+          <h2>Registrar Nueva Película</h2>
+          <form [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()">
 
-        <div class="form-group">
-          <label>Título *</label>
-          <input type="text" formControlName="titulo"
-            placeholder="Ej: Oppenheimer">
-        </div>
+            <div class="form-group">
+              <label>Título *</label>
+              <input type="text" formControlName="titulo" placeholder="Ej: Oppenheimer">
+            </div>
 
-        <div class="form-group">
-          <label>Sinopsis *</label>
-          <textarea formControlName="sinopsis" rows="2"
-            placeholder="Resumen..."></textarea>
-        </div>
+            <div class="form-group">
+              <label>Sinopsis *</label>
+              <textarea formControlName="sinopsis" rows="2" placeholder="Resumen..."></textarea>
+            </div>
 
-        <div class="form-row">
-          <div class="form-group half">
-            <label>Duración (min) *</label>
-            <input type="number" formControlName="duracionMinutos" min="1">
-          </div>
-          <div class="form-group half">
-            <label>Precio Base ($) *</label>
-            <input type="number" formControlName="precioBase" min="0">
-          </div>
-        </div>
+            <div class="form-row">
+              <div class="form-group half">
+                <label>Duración (min) *</label>
+                <input type="number" formControlName="duracionMinutos" min="1">
+              </div>
+              <div class="form-group half">
+                <label>Precio Base ($) *</label>
+                <input type="number" formControlName="precioBase" min="0">
+              </div>
+            </div>
 
-        <div class="form-group">
-          <label>Formatos permitidos para esta película *</label>
-          <div class="checklist-grid">
-            @for (fmt of formatosDisponibles; track fmt) {
-            <label class="check-item">
-              <input
-                type="checkbox"
-                [checked]="formatosSeleccionadosPelicula().includes(fmt)"
-                (change)="toggleFormatoPelicula(fmt)">
-              <span>{{ fmt }}</span>
-            </label>
-            }
-          </div>
-        </div>
+            <div class="form-group">
+              <label>Formatos permitidos para esta película *</label>
+              <div class="checklist-grid">
+                @for (fmt of formatosDisponibles; track fmt) {
+                  <label class="check-item">
+                    <input
+                      type="checkbox"
+                      [checked]="formatosSeleccionadosPelicula().includes(fmt)"
+                      (change)="toggleFormatoPelicula(fmt)">
+                    <span>{{ fmt }}</span>
+                  </label>
+                }
+              </div>
+            </div>
 
-        <div class="form-group">
-          <label>Idiomas permitidos para esta película *</label>
-          <div class="checklist-grid">
-            @for (idioma of idiomasDisponibles; track idioma) {
-            <label class="check-item">
-              <input
-                type="checkbox"
-                [checked]="idiomasSeleccionadosPelicula().includes(idioma)"
-                (change)="toggleIdiomaPelicula(idioma)">
-              <span>{{ idioma }}</span>
-            </label>
-            }
-          </div>
-        </div>
+            <div class="form-group">
+              <label>Idiomas permitidos para esta película *</label>
+              <div class="checklist-grid">
+                @for (idioma of idiomasDisponibles; track idioma) {
+                  <label class="check-item">
+                    <input
+                      type="checkbox"
+                      [checked]="idiomasSeleccionadosPelicula().includes(idioma)"
+                      (change)="toggleIdiomaPelicula(idioma)">
+                    <span>{{ idioma }}</span>
+                  </label>
+                }
+              </div>
+            </div>
 
-        <div class="form-row">
-          <div class="form-group half">
-            <label>Clasificación *</label>
-            <select formControlName="clasificacionEdad">
-              <option [value]="0">ATP</option>
-              <option [value]="13">+13</option>
-              <option [value]="16">+16</option>
-              <option [value]="18">+18</option>
-            </select>
-          </div>
-          <div class="form-group half">
-            <label>Géneros *</label>
-            <select multiple formControlName="generos" class="multi-select">
-              <option value="Acción">Acción</option>
-              <option value="Aventura">Aventura</option>
-              <option value="Ciencia Ficción">Ciencia Ficción</option>
-              <option value="Comedia">Comedia</option>
-              <option value="Drama">Drama</option>
-              <option value="Terror">Terror</option>
-            </select>
-          </div>
-        </div>
+            <div class="form-row">
+              <div class="form-group half">
+                <label>Clasificación *</label>
+                <select formControlName="clasificacionEdad">
+                  <option [value]="0">ATP</option>
+                  <option [value]="13">+13</option>
+                  <option [value]="16">+16</option>
+                  <option [value]="18">+18</option>
+                </select>
+              </div>
+              <div class="form-group half">
+                <label>Géneros *</label>
+                <select multiple formControlName="generos" class="multi-select">
+                  <option value="Acción">Acción</option>
+                  <option value="Aventura">Aventura</option>
+                  <option value="Ciencia Ficción">Ciencia Ficción</option>
+                  <option value="Comedia">Comedia</option>
+                  <option value="Drama">Drama</option>
+                  <option value="Terror">Terror</option>
+                </select>
+              </div>
+            </div>
 
-        <div class="form-group">
-          <label>Portada (Archivo)</label>
-          <input type="file" accept="image/*"
-            (change)="onPeliculaFileSelected($event)">
-        </div>
+            <div class="form-group">
+              <label>Portada (Archivo)</label>
+              <input type="file" accept="image/*" (change)="onPeliculaFileSelected($event)">
+            </div>
 
-        <div class="form-group checkbox-group">
-          <label>
-            <input type="checkbox" formControlName="esPreventa">
-            ¿Habilitar en Preventa?
-          </label>
-        </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" formControlName="esPreventa">
+                ¿Habilitar en Preventa?
+              </label>
+            </div>
 
-        <button type="submit" [disabled]="peliculaForm.invalid"
-          class="btn-pdf btn-full">
-          Registrar Película
-        </button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2>Programar Función</h2>
-      <form [formGroup]="funcionForm" (ngSubmit)="programarFuncion()">
-
-        <div class="form-group">
-          <label>Seleccionar Película *</label>
-          <select formControlName="peliculaId"
-            (change)="onPeliculaChange($event)">
-            <option value disabled selected>-- Elige una película --</option>
-            @for (peli of listaPeliculas(); track peli.id) {
-            <option [value]="peli.id">{{ peli.titulo }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Sala *</label>
-          <select formControlName="sala">
-            <option value="Sala 1">Sala 1</option>
-            <option value="Sala 2">Sala 2</option>
-            <option value="Sala 3">Sala 3</option>
-            <option value="Sala IMAX">Sala IMAX</option>
-          </select>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group half">
-            <label>Precio Base Película ($)</label>
-            <input
-              type="text"
-              [value]="precioBaseFuncion() ? ('$' + precioBaseFuncion()) : 'Seleccione película'"
-              readonly
-              class="input-readonly">
-          </div>
-
-          <div class="form-group half">
-            <label>Descuento a la función (%)</label>
-            <input
-              type="number"
-              formControlName="porcentajeDescuento"
-              min="0"
-              max="100"
-              placeholder="0"
-              (input)="actualizarDescuento($event)">
-          </div>
-        </div>
-
-        <div class="precio-preview-box">
-          <span>Precio Final por Entrada:</span>
-          <strong>${{ precioFinalFuncion() }}</strong>
-          @if (descuentoFuncion() > 0) {
-          <small class="tag-rebaja">(-{{ descuentoFuncion() }}%
-            aplicado)</small>
-          }
-        </div>
-
-        <div class="form-group">
-          <label>Fecha y Hora *</label>
-          <input type="datetime-local" formControlName="fechaHoraInicio" [min]="fechaMinima">
-        </div>
-
-        <div class="form-group">
-          <label>Formato de la Función *</label>
-          @if (formatosPermitidosFuncion().length > 0) {
-          <div class="checklist-grid">
-            @for (fmt of formatosPermitidosFuncion(); track fmt) {
-            <label class="check-item">
-              <input type="radio" formControlName="formato" [value]="fmt">
-              <span>{{ fmt }}</span>
-            </label>
-            }
-          </div>
-          } @else {
-          <small class="help-text">Selecciona una película para ver sus formatos
-            disponibles.</small>
-          }
-        </div>
-
-        <div class="form-group">
-          <label>Idioma de la Función *</label>
-          @if (idiomasPermitidosFuncion().length > 0) {
-          <div class="checklist-grid">
-            @for (idioma of idiomasPermitidosFuncion(); track idioma) {
-            <label class="check-item">
-              <input type="radio" formControlName="idioma" [value]="idioma">
-              <span>{{ idioma }}</span>
-            </label>
-            }
-          </div>
-          } @else {
-          <small class="help-text">Selecciona una película para ver sus idiomas
-            disponibles.</small>
-          }
-        </div>
-
-        <div class="notice-box">
-          Validación: Al menos 30 min libres en la sala elegida.
-        </div>
-
-        <button type="submit" [disabled]="funcionForm.invalid"
-          class="btn-excel btn-full">
-          Programar Función
-        </button>
-      </form>
-    </section>
-
-  </div>
-
-  <section class="acciones-section">
-    <h2>Reportes de Facturación</h2>
-    <button (click)="exportarPDF()" class="btn-pdf">Exportar a PDF</button>
-    <button (click)="exportarExcel()" class="btn-excel">Exportar a
-      Excel</button>
-  </section>
-
-  <div class="metricas-grid">
-    <section class="card">
-      <h2>Top 5 Películas</h2>
-      <ul>
-        @for (peli of topPeliculas(); track peli.nombre) {
-        <li><strong>{{ peli.nombre }}</strong>: {{ peli.entradas_vendidas }}
-          entradas</li>
-        }
-      </ul>
-    </section>
-
-    <section class="card highlight">
-      <h2>Producto Candy Más Vendido</h2>
-      @if (topCandy()) {
-      <div class="candy-stats">
-        <h3>{{ topCandy().nombre }}</h3>
-        <p>{{ topCandy().cantidad_vendida }} unidades vendidas</p>
-      </div>
+            <button type="submit" [disabled]="peliculaForm.invalid" class="btn-pdf btn-full">
+              Registrar Película
+            </button>
+          </form>
+        </section>
       }
-    </section>
-  </div>
 
-  <section class="log-section">
-    <h2>Log de Actividad del Sistema</h2>
-    <table class="log-table">
-      <thead>
-        <tr>
-          <th>Fecha y Hora</th>
-          <th>Usuario</th>
-          <th>Acción</th>
-          <th>Detalle</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (log of logs(); track log.id) {
-        <tr>
-          <td>{{ log.fecha_hora | date:'short' }}</td>
-          <td>{{ log.perfiles?.nombre }} {{ log.perfiles?.apellido }}</td>
-          <td><span class="badge">{{ log.tipo_accion }}</span></td>
-          <td>{{ log.detalle }}</td>
-        </tr>
-        } @empty {
-        <tr><td colspan="4">No hay actividad registrada.</td></tr>
-        }
-      </tbody>
-    </table>
-  </section>
+      <section class="card" [style.grid-column]="authService.currentUserData()?.rol === 'admin' ? 'auto' : '1 / -1'">
+        <h2>Programar Función</h2>
+        <form [formGroup]="funcionForm" (ngSubmit)="programarFuncion()">
+
+          <div class="form-group">
+            <label>Seleccionar Película *</label>
+            <select formControlName="peliculaId" (change)="onPeliculaChange($event)">
+              <option value disabled selected>-- Elige una película --</option>
+              @for (peli of listaPeliculas(); track peli.id) {
+                <option [value]="peli.id">{{ peli.titulo }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Sala *</label>
+            <select formControlName="sala">
+              <option value="Sala 1">Sala 1</option>
+              <option value="Sala 2">Sala 2</option>
+              <option value="Sala 3">Sala 3</option>
+              <option value="Sala IMAX">Sala IMAX</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Precio Base Película ($)</label>
+              <input
+                type="text"
+                [value]="precioBaseFuncion() ? ('$' + precioBaseFuncion()) : 'Seleccione película'"
+                readonly
+                class="input-readonly">
+            </div>
+
+            <div class="form-group half">
+              <label>Descuento a la función (%)</label>
+              <input
+                type="number"
+                formControlName="porcentajeDescuento"
+                min="0"
+                max="100"
+                placeholder="0"
+                (input)="actualizarDescuento($event)">
+            </div>
+          </div>
+
+          <div class="precio-preview-box">
+            <span>Precio Final por Entrada:</span>
+            <strong>${{ precioFinalFuncion() }}</strong>
+            @if (descuentoFuncion() > 0) {
+              <small class="tag-rebaja">(-{{ descuentoFuncion() }}% aplicado)</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Fecha y Hora *</label>
+            <input type="datetime-local" formControlName="fechaHoraInicio" [min]="fechaMinima">
+          </div>
+
+          <div class="form-group">
+            <label>Formato de la Función *</label>
+            @if (formatosPermitidosFuncion().length > 0) {
+              <div class="checklist-grid">
+                @for (fmt of formatosPermitidosFuncion(); track fmt) {
+                  <label class="check-item">
+                    <input type="radio" formControlName="formato" [value]="fmt">
+                    <span>{{ fmt }}</span>
+                  </label>
+                }
+              </div>
+            } @else {
+              <small class="help-text">Selecciona una película para ver sus formatos disponibles.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Idioma de la Función *</label>
+            @if (idiomasPermitidosFuncion().length > 0) {
+              <div class="checklist-grid">
+                @for (idioma of idiomasPermitidosFuncion(); track idioma) {
+                  <label class="check-item">
+                    <input type="radio" formControlName="idioma" [value]="idioma">
+                    <span>{{ idioma }}</span>
+                  </label>
+                }
+              </div>
+            } @else {
+              <small class="help-text">Selecciona una película para ver sus idiomas disponibles.</small>
+            }
+          </div>
+
+          <div class="notice-box">
+            Validación: Al menos 30 min libres en la sala elegida.
+          </div>
+
+          <button type="submit" [disabled]="funcionForm.invalid" class="btn-excel btn-full">
+            Programar Función
+          </button>
+        </form>
+      </section>
+
+    </div>
+
+    @if (authService.currentUserData()?.rol === 'admin') {
+      <section class="acciones-section">
+        <h2>Reportes de Facturación</h2>
+        <button (click)="exportarPDF()" class="btn-pdf">Exportar a PDF</button>
+        <button (click)="exportarExcel()" class="btn-excel">Exportar a Excel</button>
+      </section>
+
+      <div class="metricas-grid">
+        <section class="card">
+          <h2>Top 5 Películas</h2>
+          <ul>
+            @for (peli of topPeliculas(); track peli.nombre) {
+              <li><strong>{{ peli.nombre }}</strong>: {{ peli.entradas_vendidas }} entradas</li>
+            }
+          </ul>
+        </section>
+
+        <section class="card highlight">
+          <h2>Producto Candy Más Vendido</h2>
+          @if (topCandy()) {
+            <div class="candy-stats">
+              <h3>{{ topCandy().nombre }}</h3>
+              <p>{{ topCandy().cantidad_vendida }} unidades vendidas</p>
+            </div>
+          }
+        </section>
+      </div>
+
+      <section class="log-section">
+        <h2>Log de Actividad del Sistema</h2>
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Acción</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of logs(); track log.id) {
+              <tr>
+                <td>{{ log.fecha_hora | date:'short' }}</td>
+                <td>{{ log.perfiles?.nombre }} {{ log.perfiles?.apellido }}</td>
+                <td><span class="badge">{{ log.tipo_accion }}</span></td>
+                <td>{{ log.detalle }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4">No hay actividad registrada.</td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+
+    <section class="card" style="grid-column: 1 / -1; margin-top: 1.5rem;">
+      <h2>Inventario de Candy Bar</h2>
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Puntos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (prod of listaProductosCandy(); track prod.id) {
+            <tr>
+              <td>{{ prod.nombre }}</td>
+              <td>{{ prod.categoria }}</td>
+              <td>${{ prod.precio }}</td>
+              <td>{{ prod.costoEnPuntos }} pts</td>
+              <td>
+                <button type="button" (click)="editarProducto(prod)" class="btn-coupon">Editar</button>
+                <button type="button" (click)="eliminarProductoCandy(prod.id)" style="background:#e50914; color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:4px; margin-left:0.5rem; cursor:pointer;">Borrar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
   }
 </div>

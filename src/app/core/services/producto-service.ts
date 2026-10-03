@@ -49,4 +49,33 @@ export class ProductoService {
     }
     return { exito: true };
   }
+
+  async actualizarProducto(id: string, cambios: Partial<ProductoCandyBar>): Promise<{ exito: boolean; mensaje?: string }> {
+  const { error } = await this.supabase
+    .from('productos_candy')
+    .update({
+      nombre: cambios.nombre,
+      descripcion: cambios.descripcion,
+      precio: cambios.precio,
+      categoria: cambios.categoria,
+      es_combo: cambios.esCombo,
+      costo_en_puntos: cambios.costoEnPuntos,
+      imagen_url: cambios.imagenUrl
+    })
+    .eq('id', id);
+
+  if (error) return { exito: false, mensaje: error.message };
+  return { exito: true };
+}
+
+async eliminarProducto(id: string): Promise<{ exito: boolean; mensaje?: string }> {
+  const { error } = await this.supabase
+    .from('productos_candy')
+    .delete()
+    .eq('id', id);
+
+  if (error) return { exito: false, mensaje: error.message };
+  return { exito: true };
+}
+
 }

@@ -4,69 +4,69 @@ import { authAdminGuard } from './core/guards/auth-admin.guard';
 import { authEmpleadoGuard } from './core/guards/auth-empleado.guard';
 
 export const routes: Routes = [
-  { 
-    path: '', 
-    redirectTo: 'home', 
-    pathMatch: 'full' 
-  },
-  { 
-    path: 'home', 
-    loadComponent: () => import('./features/home/home').then(m => m.HomeComponent) 
-  },
-  { 
-    path: 'login', 
-    loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent) 
-  },
-  { 
-    path: 'register', 
-    loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent) 
-  },
-  { 
-    path: 'pelicula/:id', 
-    loadComponent: () => import('./features/movie-detail/movie-detail').then(m => m.MovieDetailComponent) 
-  },
-  { 
-    path: 'favoritos', 
-    loadComponent: () => import('./features/favoritos/favoritos').then(m => m.FavoritosComponent), 
-    canActivate: [authGuard]
-  },
-  { 
-    path: 'admin', 
-    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboardComponent), 
-    canActivate: [authAdminGuard]
-  },
-  { 
-    path: 'admin/agregar-pelicula', 
-    loadComponent: () => import('./features/agregar-pelicula/agregar-pelicula').then(m => m.AgregarPeliculaComponent), 
-    canActivate: [authAdminGuard]
-  },
-  { 
-    path: 'reserva/:funcionId', 
-    loadComponent: () => import('./features/seat-selection/seat-selection').then(m => m.SeatSelectionComponent) 
-  },
-  { 
-    path: 'candybar', 
-    loadComponent: () => import('./features/candybar/candybar').then(m => m.CandybarComponent) 
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
   },
   {
-  path: 'perfil',
-  loadComponent: () => import('./features/perfil/perfil').then(m => m.PerfilComponent)
+    path: 'home',
+    loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
   },
-  { 
-    path: 'resumen', 
-    loadComponent: () => import('./features/resumen/resumen').then(m => m.ResumenComponent) 
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent)
   },
-  { 
-    path: 'proximamente', 
-    loadComponent: () => import('./features/proximamente/proximamente').then(m => m.ProximamenteComponent) 
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent)
   },
-  { 
-    path: 'empleado/qr-scanner', 
-    loadComponent: () => import('./features/empleado/qr-scan').then(m => m.QrScannerComponent), 
+  {
+    path: 'pelicula/:id',
+    loadComponent: () => import('./features/movie-detail/movie-detail').then(m => m.MovieDetailComponent)
+  },
+  {
+    path: 'favoritos',
+    loadComponent: () => import('./features/favoritos/favoritos').then(m => m.FavoritosComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboardComponent),
     canActivate: [authEmpleadoGuard]
   },
-  { 
-    path: '**', 
-    redirectTo: 'home' 
+  {
+    path: 'admin/agregar-pelicula',
+    loadComponent: () => import('./features/agregar-pelicula/agregar-pelicula').then(m => m.AgregarPeliculaComponent),
+    canActivate: [authAdminGuard]
+  },
+  {
+    path: 'reserva/:funcionId',
+    loadComponent: () => import('./features/seat-selection/seat-selection').then(m => m.SeatSelectionComponent)
+  },
+  {
+    path: 'candybar',
+    loadComponent: () => import('./features/candybar/candybar').then(m => m.CandybarComponent)
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./features/perfil/perfil').then(m => m.PerfilComponent)
+  },
+  {
+    path: 'resumen',
+    loadComponent: () => import('./features/resumen/resumen').then(m => m.ResumenComponent)
+  },
+  {
+    path: 'proximamente',
+    loadComponent: () => import('./features/proximamente/proximamente').then(m => m.ProximamenteComponent)
+  },
+  {
+    path: 'empleado/qr-scanner',
+    loadComponent: () => import('./features/empleado/qr-scan').then(m => m.QrScannerComponent),
+    canActivate: [authEmpleadoGuard]
+  },
+  {
+    path: '**',
+    redirectTo: 'home'
   }
 ];

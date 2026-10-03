@@ -1,11 +1,13 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 import { ReportesService } from '../../../core/services/reportes.service';
 import { CineService } from '../../../core/services/cine.service';
 import { PeliculasService } from '../../../core/services/pelicula.service';
 import { ProductoService } from '../../../core/services/producto-service';
 import { SupabaseService } from '../../../core/services/supabase.service';
+import { ProductoCandyBar } from '../../../core/models/producto.candybar.interface';
+import { DatePipe } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -15,6 +17,7 @@ import { SupabaseService } from '../../../core/services/supabase.service';
   styleUrl: './admin-dashboard.css'
 })
 export class AdminDashboardComponent implements OnInit {
+  authService = inject(AuthService);
   private reportesService = inject(ReportesService);
   private cineService = inject(CineService);
   private peliculaService = inject(PeliculasService);
@@ -272,35 +275,79 @@ async programarFuncion() {
   }
 }
 
-  async guardarProductoCandy() {
-    if (this.candyForm.invalid) return;
+listaProductosCandy = signal<ProductoCandyBar[]>([]);
+productoEnEdicionId = signal<string | null>(null);
 
-    const val = this.candyForm.getRawValue();
-    const res = await this.productoService.crearProductoOCombo({
+async cargarProductosCandy() {
+  const data = await this.productoService.obtenerProductos();
+  this.listaProductosCandy.set(data);
+}
+
+editarProducto(prod: ProductoCandyBar) {
+  this.productoEnEdicionId.set(prod.id);
+  this.candyForm.patchValue({
+    nombre: prod.nombre,
+    descripcion: prod.descripcion,
+    precio: prod.precio,
+    categoria: prod.categoria,
+    esCombo: prod.esCombo,
+    costoEnPuntos: prod.costoEnPuntos ?? 0,
+    imagenUrl: prod.imagenUrl
+  });
+}
+
+cancelarEdicion() {
+  this.productoEnEdicionId.set(null);
+  this.candyForm.reset({
+    nombre: '',
+    descripcion: '',
+    precio: 3500,
+    categoria: 'Combos',
+    esCombo: true,
+    costoEnPuntos: 300,
+    imagenUrl: ''
+  });
+}
+
+async guardarProductoCandy() {
+  if (this.candyForm.invalid) return;
+  const val = this.candyForm.getRawValue();
+
+  if (this.productoEnEdicionId()) {
+    // Modo Edición
+    const res = await this.productoService.actualizarProducto(this.productoEnEdicionId()!, {
       nombre: val.nombre,
       descripcion: val.descripcion,
       precio: Number(val.precio),
       categoria: val.categoria,
-      es_combo: val.categoria === 'Combos' || val.esCombo,
-      costo_en_puntos: Number(val.costoEnPuntos),
-      imagen_url: val.imagenUrl || 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400'
+      esCombo: val.esCombo,
+      costoEnPuntos: Number(val.costoEnPuntos),
+      imagenUrl: val.imagenUrl
     });
 
     if (res.exito) {
-      alert('¡Producto / Combo registrado con éxito en el Candy Bar!');
-      this.candyForm.reset({
-        nombre: '',
-        descripcion: '',
-        precio: 3500,
-        categoria: 'Combos',
-        esCombo: true,
-        costoEnPuntos: 300,
-        imagenUrl: ''
-      });
-    } else {
-      alert(`Error: ${res.mensaje}`);
+      alert('Producto actualizado correctamente');
+      this.cancelarEdicion();
+      await this.cargarProductosCandy();
+    }
+  } else {
+    const res = await this.productoService.crearProductoOCombo({ ...val, es_combo: val.esCombo, costo_en_puntos: val.costoEnPuntos, imagen_url: val.imagenUrl });
+    if (res.exito) {
+      this.cancelarEdicion();
+      await this.cargarProductosCandy();
     }
   }
+}
+
+async eliminarProductoCandy(id: string) {
+  if (!confirm('¿Deseas eliminar este producto del Candy Bar?')) return;
+  const res = await this.productoService.eliminarProducto(id);
+  if (res.exito) {
+    await this.cargarProductosCandy();
+  } else {
+    alert(`Error: ${res.mensaje}`);
+  }
+}
 
   exportarPDF() {
     this.reportesService.exportarFacturacion('pdf');
@@ -309,4 +356,6 @@ async programarFuncion() {
   exportarExcel() {
     this.reportesService.exportarFacturacion('excel');
   }
+
+  
 }

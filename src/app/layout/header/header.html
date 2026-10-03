@@ -5,29 +5,32 @@
 
   <nav class="nav-links">
     <a routerLink="/home" routerLinkActive="active">Inicio</a>
-    
+
     <a routerLink="/proximamente" routerLinkActive="active">Próximamente</a>
 
     @if (authService.currentUser()) {
-      <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
-      <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
+    <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
+    <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
 
-      @if (authService.currentUserData()?.rol === 'empleado' || authService.currentUserData()?.rol === 'admin') {
-        <a routerLink="/empleado/qr-scanner" routerLinkActive="active" class="empleado-badge">
-          Escanear QR
-        </a>
-      }
-      
-      @if (authService.currentUserData()?.rol === 'admin') {
-        <a routerLink="/admin" routerLinkActive="active" class="admin-badge">
-          Panel Admin
-        </a>
-      }
+    @if (authService.currentUserData()?.rol === 'empleado' ||
+    authService.currentUserData()?.rol === 'admin') {
+    <a routerLink="/empleado/qr-scanner" routerLinkActive="active"
+      class="empleado-badge">
+      Escanear QR
+    </a>
+    }
 
-      <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+    @if (authService.currentUserData()?.rol === 'admin' ||
+    authService.currentUserData()?.rol === 'empleado') {
+    <a routerLink="/admin" routerLinkActive="active" class="admin-badge">
+      Panel Gestión
+    </a>
+    }
+
+    <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
     } @else {
-      <a routerLink="/login" routerLinkActive="active">Iniciar Sesión</a>
-      <a routerLink="/register" routerLinkActive="active">Registrarse</a>
+    <a routerLink="/login" routerLinkActive="active">Iniciar Sesión</a>
+    <a routerLink="/register" routerLinkActive="active">Registrarse</a>
     }
   </nav>
 </header>

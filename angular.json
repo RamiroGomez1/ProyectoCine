@@ -13,6 +13,14 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
+            "allowedCommonJsDependencies": [
+              "qrcode",
+              "html2canvas",
+              "canvg",
+              "raf",
+              "rgbcolor",
+              "core-js"
+            ],
             "outputPath": "dist/cine",
             "index": "src/index.html",
             "main": "src/main.ts",
