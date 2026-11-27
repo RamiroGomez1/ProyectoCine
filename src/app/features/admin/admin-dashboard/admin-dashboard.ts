@@ -11,10 +11,10 @@ import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
-  templateUrl: './admin-dashboard.html',
-  styleUrl: './admin-dashboard.css'
+  standalone: true, // componente autonomo, gestiona sus propias dependencias
+  imports: [ReactiveFormsModule, DatePipe], // lista de depencencias
+  templateUrl: './admin-dashboard.html', //ruta de estructura visual 
+  styleUrl: './admin-dashboard.css' // ruta a la hoja de estilos
 })
 export class AdminDashboardComponent implements OnInit {
   authService = inject(AuthService);

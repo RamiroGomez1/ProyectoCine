@@ -18,14 +18,12 @@
       class="empleado-badge">
       Escanear QR
     </a>
-    }
-
-    @if (authService.currentUserData()?.rol === 'admin' ||
-    authService.currentUserData()?.rol === 'empleado') {
     <a routerLink="/admin" routerLinkActive="active" class="admin-badge">
       Panel Gestión
     </a>
-    }
+    
+
+  }
 
     <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
     } @else {

@@ -12,7 +12,7 @@ export const authEmpleadoGuard: CanActivateFn = async (route, state) => {
   if (!userData && user?.id) {
     await authService.cargarDatosUsuario(user.id);
     userData = authService.currentUserData();
-  }
+  } 
 
   if (userData?.rol === 'empleado' || userData?.rol === 'admin') {
     return true;

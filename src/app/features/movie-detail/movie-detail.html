@@ -43,13 +43,13 @@
         
         @if (pelicula().clasificacion_edad >= 13) {
           <div class="alerta-edad">
-            Película para mayores de {{ pelicula().clasificacion_edad }} años. Menores requieren ingreso con un adulto[cite: 9].
+            Película para mayores de {{ pelicula().clasificacion_edad }} años. Menores requieren ingreso con un adulto.
           </div>
         }
 
         <div class="precio-section">
           @if (enPreventa()) {
-            <span class="badge-preventa">¡Precio Especial de Preventa![cite: 9]</span>
+            <span class="badge-preventa">¡Precio Especial de Preventa!</span>
           }
           <h2>${{ pelicula().precio_base }}</h2>
         </div>
@@ -83,7 +83,7 @@
     <section class="resenas-section">
       <h2>Opiniones de la Comunidad</h2>
 
-      <!-- Formulario para dejar reseña[cite: 9] -->
+      <!-- Formulario para dejar reseña -->
       <div class="form-resena-box">
         <h3>Dejar tu Calificación</h3>
         
