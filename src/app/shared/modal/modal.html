@@ -1,0 +1,15 @@
+@if (modalService.modal(); as modal) {
+  <div class="fondo-modal" (click)="modalService.cerrar(false)">
+    <div class="caja-modal" (click)="$event.stopPropagation()">
+      <p>{{ modal.mensaje }}</p>
+      <div class="botones-modal">
+        @if (modal.tipo === 'confirmar') {
+          <button class="btn-cancelar" (click)="modalService.cerrar(false)">Cancelar</button>
+          <button class="btn-aceptar" (click)="modalService.cerrar(true)">Aceptar</button>
+        } @else {
+          <button class="btn-aceptar" (click)="modalService.cerrar(true)">Entendido</button>
+        }
+      </div>
+    </div>
+  </div>
+}

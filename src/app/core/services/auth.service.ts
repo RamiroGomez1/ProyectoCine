@@ -16,12 +16,14 @@ export class AuthService {
     this.initAuthSession();
   }
 
+  private sesionCargada: Promise<void> | null = null;
+
   private initAuthSession() {
-    this.supabase.auth.getSession().then(({ data: { session } }) => {
+    this.sesionCargada = this.supabase.auth.getSession().then(async ({ data: { session } }) => {
       this.currentSession.set(session);
       this.currentUser.set(session?.user ?? null);
       if (session?.user) {
-        this.cargarDatosUsuario(session.user.id);
+        await this.cargarDatosUsuario(session.user.id);
       }
     });
 
@@ -34,6 +36,11 @@ export class AuthService {
         this.currentUserData.set(null);
       }
     });
+  }
+
+  // los guards esperan a que termine de cargar la sesion (si no al recargar la pagina te saca)
+  async esperarSesion() {
+    await this.sesionCargada;
   }
 
   async cargarDatosUsuario(userId: string) {
@@ -73,6 +80,17 @@ export class AuthService {
         }
       }
     });
+  }
+
+  // supabase devuelve los errores de login/registro en ingles
+  traducirError(mensaje: string): string {
+    if (mensaje.includes('Invalid login credentials')) return 'Email o contraseña incorrectos.';
+    if (mensaje.includes('Email not confirmed')) return 'Tenés que confirmar tu email antes de iniciar sesión.';
+    if (mensaje.includes('already registered')) return 'Ya existe una cuenta con ese email.';
+    if (mensaje.includes('Password should be')) return 'La contraseña debe tener al menos 6 caracteres.';
+    if (mensaje.includes('rate limit') || mensaje.includes('security purposes')) return 'Demasiados intentos, esperá unos minutos.';
+    if (mensaje.includes('invalid')) return 'El email no es válido.';
+    return 'Ocurrió un error, intentá de nuevo.';
   }
 
   async signIn(email: string, password: string) {

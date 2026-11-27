@@ -21,8 +21,14 @@ export class RegisterComponent {
     nombre: ['', [Validators.required, Validators.minLength(2)]],
     apellido: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    fechaNacimiento: ['', Validators.required],
+    tipoSangre: ['', Validators.required],
+    colorOjos: ['', Validators.required],
+    diasVacaciones: [0, [Validators.required, Validators.min(0), Validators.max(365)]]
   });
+
+  tiposSangre = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', '0+', '0-'];
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -35,7 +41,7 @@ export class RegisterComponent {
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    const { nombre, apellido, email, password } = this.registerForm.value;
+    const { nombre, apellido, email, password, fechaNacimiento, tipoSangre, colorOjos, diasVacaciones } = this.registerForm.value;
 
     try {
       const { data, error } = await this.authService.signUp(email!, password!, nombre!, apellido!);
@@ -46,10 +52,17 @@ export class RegisterComponent {
           .from('usuarios')
           .insert([
             {
-              id: data.user.id, 
+              id: data.user.id,
+              email: email!,
               nombre: nombre!,
               apellido: apellido!,
-              rol: 'user' 
+              fecha_nacimiento: fechaNacimiento,
+              tipo_sangre: tipoSangre,
+              color_ojos: colorOjos,
+              dias_vacaciones: Number(diasVacaciones),
+              puntos_fidelidad: 0,
+              saldo_favor: 0,
+              rol: 'cliente'
             }
           ]);
 
@@ -66,7 +79,7 @@ export class RegisterComponent {
       }, 2000);
 
     } catch (error: any) {
-      this.errorMessage.set(error.message || 'Error al registrarse');
+      this.errorMessage.set(this.authService.traducirError(error.message || ''));
     } finally {
       this.isLoading.set(false);
     }

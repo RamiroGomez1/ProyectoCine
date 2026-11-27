@@ -10,7 +10,7 @@
 
     @if (authService.currentUser()) {
     <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
-    <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
+    <a routerLink="/mis-peliculas" routerLinkActive="active">Mis Películas</a>
 
     @if (authService.currentUserData()?.rol === 'empleado' ||
     authService.currentUserData()?.rol === 'admin') {
@@ -18,12 +18,13 @@
       class="empleado-badge">
       Escanear QR
     </a>
-    <a routerLink="/admin" routerLinkActive="active" class="admin-badge">
-      Panel Gestión
-    </a>
-    
+    }
 
-  }
+    @if (authService.currentUserData()?.rol === 'admin') {
+    <a routerLink="/admin" routerLinkActive="active" class="admin-badge">
+      Panel Admin
+    </a>
+    }
 
     <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
     } @else {

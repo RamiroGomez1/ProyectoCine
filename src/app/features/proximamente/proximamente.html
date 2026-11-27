@@ -8,13 +8,17 @@
     <div class="movies-grid">
       @for (peli of peliculasFuturas(); track peli.id) {
         <div class="movie-card">
-          <img [src]="peli.imagen" alt="Portada de {{ peli.nombre }}">
+          <img [src]="peli.portada_url || 'icons/sin-portada.svg'" alt="Portada de {{ peli.titulo }}">
           <div class="card-content">
-            <h3>{{ peli.nombre }}</h3>
-            <p class="fecha-estreno">Estreno: {{ peli.fecha_estreno }}</p>
+            <h3>{{ peli.titulo }}</h3>
+            <p class="fecha-estreno">Estreno: {{ peli.fecha_estreno + 'T00:00:00' | date:'dd/MM/yyyy' }}</p>
             <p class="sinopsis-corta">{{ peli.sinopsis }}</p>
             
-            @if (tieneAlerta(peli.id)) {
+            @if (ventaAbierta(peli)) {
+              <a [routerLink]="['/pelicula', peli.id]" class="btn-alerta">
+                Comprar en preventa
+              </a>
+            } @else if (tieneAlerta(peli.id)) {
               <button class="btn-alerta-activa" disabled>
                 Alerta Activada
               </button>

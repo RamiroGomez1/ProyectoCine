@@ -1,0 +1,52 @@
+<section class="mis-peliculas-container">
+  <h2>Mis Películas</h2>
+
+  @if (cargando()) {
+    <p class="loading-state">Cargando tu historial...</p>
+  } @else {
+    <div class="mis-peliculas-grid">
+      @for (peli of peliculas(); track peli.reservaId) {
+        <div class="pelicula-vista">
+          <img [src]="peli.portadaUrl || 'icons/sin-portada.svg'" [alt]="peli.titulo" class="cover">
+          <div class="info">
+            <h3>{{ peli.titulo }}</h3>
+            <p class="fecha">La viste el {{ peli.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+
+            @if (peli.puntuacion) {
+              <span class="estrellas">
+                @for (s of [1,2,3,4,5]; track s) {
+                  {{ s <= peli.puntuacion ? '★' : '☆' }}
+                }
+              </span>
+              <p class="nota">{{ peli.comentario }}</p>
+            } @else if (calificandoId() !== peli.reservaId) {
+              <div class="actions">
+                <button class="btn-save" (click)="iniciarCalificacion(peli)">Calificar</button>
+              </div>
+            } @else {
+              <div class="edit-nota-form">
+                <div class="estrellas-row">
+                  <label>Estrellas:</label>
+                  <select [formControl]="estrellasControl">
+                    <option [value]="5">5</option>
+                    <option [value]="4">4</option>
+                    <option [value]="3">3</option>
+                    <option [value]="2">2</option>
+                    <option [value]="1">1</option>
+                  </select>
+                </div>
+                <input type="text" [formControl]="comentarioControl" maxlength="200" placeholder="Comentario corto...">
+                <div class="actions">
+                  <button class="btn-save" (click)="guardarCalificacion(peli)" [disabled]="comentarioControl.invalid">Guardar</button>
+                  <button class="btn-cancel" (click)="cancelar()">Cancelar</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="empty-state">Todavía no viste ninguna película con nosotros. <a routerLink="/home">Ver cartelera</a></p>
+      }
+    </div>
+  }
+</section>

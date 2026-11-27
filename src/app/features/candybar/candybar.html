@@ -8,31 +8,63 @@
   @if (cargando()) {
     <p style="text-align: center; color: #8c8c9e; padding: 2rem 0;">Cargando productos del Candy Bar...</p>
   } @else {
-    <div class="candybar-grid">
-      @for (prod of productos(); track prod.id) {
-        <div class="candy-card">
-          <div class="candy-image">
-            <img [src]="prod.imagenUrl" [alt]="prod.nombre" />
-          </div>
-          
-          <div class="candy-body">
-            <span class="candy-badge">{{ prod.categoria }}</span>
-            <h3>{{ prod.nombre }}</h3>
-            <p class="candy-desc">{{ prod.descripcion }}</p>
-            <p class="candy-price">${{ prod.precio }}</p>
-            
-            <div class="counter-container">
-              <button class="btn-counter" (click)="removerProducto(prod)" [disabled]="(obtenerCantidad(prod) === 0)">-</button>
-              <span class="counter-value">{{ obtenerCantidad(prod) }}</span>
-              <button class="btn-counter" (click)="agregarProducto(prod)">+</button>
+    @if (combos().length > 0) {
+      <h3 class="categoria-titulo destacado">Combos especiales (incluyen entrada)</h3>
+      <div class="candybar-grid">
+        @for (prod of combos(); track prod.id) {
+          <div class="candy-card" [class.combo]="prod.esCombo">
+            <div class="candy-image">
+              <img [src]="prod.imagenUrl" [alt]="prod.nombre" />
+            </div>
+
+            <div class="candy-body">
+              <span class="candy-badge">{{ prod.esCombo ? 'Combo' : prod.categoria }}</span>
+              <h3>{{ prod.nombre }}</h3>
+              <p class="candy-desc">{{ prod.descripcion }}</p>
+              <p class="candy-price">${{ prod.precio }}</p>
+
+              <div class="counter-container">
+                <button class="btn-counter" (click)="removerProducto(prod)" [disabled]="(obtenerCantidad(prod) === 0)">-</button>
+                <span class="counter-value">{{ obtenerCantidad(prod) }}</span>
+                <button class="btn-counter" (click)="agregarProducto(prod)">+</button>
+              </div>
             </div>
           </div>
-        </div>
-      } @empty {
-        <p style="color: #8c8c9e;">No hay productos cargados en el Candy Bar actualmente.</p>
-      }
-    </div>
+        }
+      </div>
+    }
+
+    @for (cat of categorias(); track cat.nombre) {
+      <h3 class="categoria-titulo">{{ cat.nombre }}</h3>
+      <div class="candybar-grid">
+        @for (prod of cat.productos; track prod.id) {
+          <div class="candy-card" [class.combo]="prod.esCombo">
+            <div class="candy-image">
+              <img [src]="prod.imagenUrl" [alt]="prod.nombre" />
+            </div>
+
+            <div class="candy-body">
+              <span class="candy-badge">{{ prod.esCombo ? 'Combo' : prod.categoria }}</span>
+              <h3>{{ prod.nombre }}</h3>
+              <p class="candy-desc">{{ prod.descripcion }}</p>
+              <p class="candy-price">${{ prod.precio }}</p>
+
+              <div class="counter-container">
+                <button class="btn-counter" (click)="removerProducto(prod)" [disabled]="(obtenerCantidad(prod) === 0)">-</button>
+                <span class="counter-value">{{ obtenerCantidad(prod) }}</span>
+                <button class="btn-counter" (click)="agregarProducto(prod)">+</button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (productos().length === 0) {
+      <p style="color: #8c8c9e;">No hay productos cargados en el Candy Bar actualmente.</p>
+    }
   }
+
 
   <div class="summary-bar">
     <div class="summary-info">

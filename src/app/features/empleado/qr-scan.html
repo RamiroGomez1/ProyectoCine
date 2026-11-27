@@ -1,12 +1,26 @@
 <div class="scanner-container">
   <h1>Validación de Accesos y Candy Bar</h1>
-  <p class="subtitle">Escaneá el código QR del ticket o ingresalo manualmente si el lector no funciona.</p>
+  <p class="subtitle">Escaneá el código QR del ticket con la cámara o ingresalo manualmente si el lector no funciona.</p>
+
+  <div class="modo-group">
+    <button [class.activo]="modo() === 'entrada'" (click)="cambiarModo('entrada')">Entrada a sala</button>
+    <button [class.activo]="modo() === 'candy'" (click)="cambiarModo('candy')">Candy Bar</button>
+  </div>
+
+  @if (camaraActiva()) {
+    <video #video class="camara" playsinline muted></video>
+    <button class="btn-camara" (click)="detenerCamara()">Cerrar cámara</button>
+  } @else {
+    <button class="btn-camara" (click)="iniciarCamara()">Escanear con la cámara</button>
+  }
 
   <div class="input-manual-group">
     <input
       type="text"
+      autofocus
       [value]="codigoManual()"
       (input)="codigoManual.set($any($event.target).value)"
+      (keyup.enter)="procesarCodigo(codigoManual())"
       placeholder="Ingresar código QR / Hash...">
     <button (click)="procesarCodigo(codigoManual())">Validar</button>
   </div>
@@ -14,6 +28,21 @@
   @if (mensajeValidacion()) {
     <div class="mensaje-validacion" [class.exito]="mensajeValidacion()?.tipo === 'exito'" [class.error]="mensajeValidacion()?.tipo === 'error'">
       {{ mensajeValidacion()?.texto }}
+    </div>
+  }
+
+  @if (reservaValidada(); as reserva) {
+    <div class="detalle-reserva">
+      @if (modo() === 'entrada') {
+        <p><strong>{{ reserva.funciones?.peliculas?.titulo }}</strong> - {{ reserva.funciones?.sala }}</p>
+        <p>Butacas: {{ reserva.asientos?.join(', ') }}</p>
+      } @else {
+        <ul>
+          @for (item of reserva.items_candy; track item.nombre) {
+            <li>{{ item.cantidad }}x {{ item.nombre }}</li>
+          }
+        </ul>
+      }
     </div>
   }
 </div>

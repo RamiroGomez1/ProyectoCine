@@ -6,22 +6,13 @@
   } @else if (pelicula()) {
     <div class="detail-card">
       <img 
-        [src]="pelicula().portada_url || 'https://via.placeholder.com/320x450?text=Sin+Portada'" 
+        [src]="pelicula().portada_url || 'icons/sin-portada.svg'" 
         [alt]="pelicula().titulo" 
         class="detail-cover"
       >
       
       <div class="detail-info">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
-          <h1>{{ pelicula().titulo }}</h1>
-          
-          <button 
-            type="button" 
-            (click)="agregarAFavoritos()" 
-            style="background: #f39c12; color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
-            ⭐ Guardar en Favoritos
-          </button>
-        </div>
+        <h1>{{ pelicula().titulo }}</h1>
         
         <div class="rating">
           ⭐ {{ promedioResenas() }} / 5.0 
@@ -39,6 +30,9 @@
           <p><strong>Formatos:</strong> {{ pelicula().formato }}</p>
           <p><strong>Idioma:</strong> {{ pelicula().idioma }}</p>
           <p><strong>Clasificación:</strong> {{ pelicula().clasificacion_edad > 0 ? '+' + pelicula().clasificacion_edad : 'ATP' }}</p>
+          @if (pelicula().fecha_estreno) {
+            <p><strong>Estreno:</strong> {{ pelicula().fecha_estreno + 'T00:00:00' | date:'dd/MM/yyyy' }}</p>
+          }
         </div>
         
         @if (pelicula().clasificacion_edad >= 13) {
@@ -50,13 +44,17 @@
         <div class="precio-section">
           @if (enPreventa()) {
             <span class="badge-preventa">¡Precio Especial de Preventa!</span>
+            <h2>${{ pelicula().precio_preventa }}</h2>
+          } @else {
+            <h2>${{ pelicula().precio_base }}</h2>
           }
-          <h2>${{ pelicula().precio_base }}</h2>
         </div>
 
         <div class="funciones-seccion">
           <h3>Funciones Disponibles</h3>
-          @if (funciones().length > 0) {
+          @if (!ventaAbierta()) {
+            <p class="sin-funciones">La venta de entradas abre el {{ aperturaVenta() | date:'dd/MM/yyyy' }}.</p>
+          } @else if (funciones().length > 0) {
             <div class="funciones-grid">
               @for (fun of funciones(); track fun.id) {
                 <div class="funcion-card">
@@ -64,7 +62,7 @@
                     <span class="sala-tag">{{ fun.sala }}</span>
                     <span class="horario-tag">{{ fun.fecha_hora | date:'dd/MM HH:mm' }}</span>
                     <span class="format-tag">{{ fun.formato }} • {{ fun.idioma }}</span>
-                    <span class="precio-tag">${{ fun.precio }}</span>
+                    <span class="precio-tag">${{ precioFuncion(fun) }}</span>
                   </div>
                   <button type="button" class="btn-comprar-funcion" (click)="irASeleccionButacas(fun.id)">
                     Comprar Entrada

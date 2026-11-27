@@ -3,7 +3,10 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { CarritoService } from '../../core/services/carrito.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PeliculasService } from '../../core/services/pelicula.service';
+import { FidelizacionService } from '../../core/services/fidelizacion.service';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { ModalService } from '../../core/services/modal.service';
 
 export interface Butaca {
   id: string;
@@ -23,10 +26,13 @@ export interface Butaca {
 })
 export class SeatSelectionComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
+  private modal = inject(ModalService);
   private router = inject(Router);
   private supabase = inject(SupabaseService).client;
   private carritoService = inject(CarritoService);
   private authService = inject(AuthService);
+  private peliculaService = inject(PeliculasService);
+  private fidelizacionService = inject(FidelizacionService);
 
   funcionId = signal<string>('');
   funcion = signal<any>(null);
@@ -35,6 +41,7 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
   precioBase = signal<number>(4000);
   sala = signal<Butaca[][]>([]);
   asientosSeleccionados = signal<Butaca[]>([]);
+  puntosEntrada = signal<number>(0);
 
   private canalRealtime: RealtimeChannel | null = null;
 
@@ -75,21 +82,27 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
   }
 
   async recargarOcupacion(fId: string) {
-    const user = this.authService.currentUser();
     const { data: reservas } = await this.supabase
       .from('reservas')
-      .select('asientos, estado, usuario_id')
+      .select('asientos, estado, fecha_compra')
       .eq('funcion_id', fId)
       .neq('estado', 'cancelada');
+
+    // las butacas bloqueadas hace mas de 15 min se liberan (alguien que no termino la compra)
+    const limiteBloqueo = Date.now() - 15 * 60000;
 
     const ocupados = new Set<string>();
     if (reservas) {
       reservas.forEach(r => {
-        if (r.usuario_id !== user?.id && Array.isArray(r.asientos)) {
+        if (r.estado === 'bloqueada' && new Date(r.fecha_compra).getTime() < limiteBloqueo) return;
+        if (Array.isArray(r.asientos)) {
           r.asientos.forEach((a: string) => ocupados.add(a));
         }
       });
     }
+
+    // las que tengo seleccionadas yo no cuentan como ocupadas
+    this.asientosSeleccionados().forEach(b => ocupados.delete(b.id));
 
     this.sala.update(matriz =>
       matriz.map(fila =>
@@ -115,10 +128,10 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
 
     if (funcionData) {
       this.funcion.set(funcionData);
-      this.precioBase.set(Number(funcionData.precio) || 4000);
+      this.precioBase.set(this.peliculaService.precioEntrada(funcionData.peliculas, funcionData.precio) || 4000);
     }
 
-    await this.recargarOcupacion(fId);
+    this.puntosEntrada.set(await this.fidelizacionService.obtenerPuntosEntrada());
     this.sala.set(this.generarSala(new Set()));
     await this.recargarOcupacion(fId);
     this.cargando.set(false);
@@ -194,7 +207,8 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
             asientos: [butaca.id],
             total_pagar: butaca.precio,
             qr_codigo: codigoTemporal,
-            estado: 'bloqueada'
+            estado: 'bloqueada',
+            fecha_compra: new Date().toISOString()
           }
         ]);
     }
@@ -202,9 +216,12 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
 
   continuarACandyBar() {
     if (this.asientosSeleccionados().length === 0) {
-      alert('Debes seleccionar al menos una butaca.');
+      this.modal.avisar('Debes seleccionar al menos una butaca.');
       return;
     }
+
+    // arranca una compra nueva
+    this.carritoService.limpiarCarrito();
 
     this.asientosSeleccionados().forEach(b => {
       this.carritoService.agregarItem({
@@ -212,7 +229,8 @@ export class SeatSelectionComponent implements OnInit, OnDestroy {
         id: `${this.funcionId()}_${b.id}`,
         nombre: `Entrada Butaca ${b.id} (${b.tipo.toUpperCase()})`,
         precio: b.precio,
-        cantidad: 1
+        cantidad: 1,
+        costoPuntos: this.puntosEntrada()
       });
     });
 

@@ -6,6 +6,8 @@ export interface ItemCarrito {
   nombre: string;
   precio: number;
   cantidad: number;
+  esCombo?: boolean;
+  costoPuntos?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,6 +29,10 @@ export class CarritoService {
       }
       return [...actuales, item];
     });
+  }
+
+  quitarPorTipo(tipo: 'entrada' | 'candy') {
+    this.items.update(actuales => actuales.filter(i => i.tipo !== tipo));
   }
 
   limpiarCarrito() {

@@ -37,7 +37,7 @@ export class LoginComponent {
       
       this.router.navigate(['/home']);
     } catch (error: any) {
-      this.errorMessage.set(error.message || 'Error al iniciar sesión');
+      this.errorMessage.set(this.authService.traducirError(error.message || ''));
     } finally {
       this.isLoading.set(false);
     }

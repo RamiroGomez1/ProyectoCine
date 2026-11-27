@@ -12,4 +12,7 @@ export interface Pelicula {
   clasificacionEdad: number;
   precioBase: number;
   esPreventa?: boolean;
+  precioPreventa?: number;
+  fechaEstreno?: string;
+  visible?: boolean;
 }

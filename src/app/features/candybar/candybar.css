@@ -190,3 +190,16 @@ h2 {
 .btn-next:hover, .btn-confirm:hover {
   background-color: #00a182;
 }
+.categoria-titulo {
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+}
+
+.categoria-titulo.destacado {
+  color: #f1c40f;
+}
+
+.candy-card.combo {
+  border: 2px solid #f1c40f;
+}

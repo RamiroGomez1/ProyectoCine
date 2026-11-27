@@ -6,6 +6,8 @@ export const authAdminGuard: CanActivateFn = async (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  await authService.esperarSesion();
+
   const user = authService.currentUser();
   let userData = authService.currentUserData();
 

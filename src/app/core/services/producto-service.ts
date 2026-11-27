@@ -24,7 +24,7 @@ export class ProductoService {
       nombre: p.nombre,
       descripcion: p.descripcion,
       precio: Number(p.precio),
-      imagenUrl: p.imagen_url || 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400',
+      imagenUrl: p.imagen_url || 'icons/sin-portada.svg',
       categoria: p.categoria,
       esCombo: Boolean(p.es_combo),
       costoEnPuntos: p.costo_en_puntos ?? 0
@@ -45,7 +45,8 @@ export class ProductoService {
       .insert([producto]);
 
     if (error) {
-      return { exito: false, mensaje: error.message };
+      console.error(error.message);
+      return { exito: false, mensaje: 'No se pudo guardar en la base de datos.' };
     }
     return { exito: true };
   }
@@ -64,7 +65,10 @@ export class ProductoService {
     })
     .eq('id', id);
 
-  if (error) return { exito: false, mensaje: error.message };
+  if (error) {
+    console.error(error.message);
+    return { exito: false, mensaje: 'No se pudo guardar en la base de datos.' };
+  }
   return { exito: true };
 }
 
@@ -74,7 +78,10 @@ async eliminarProducto(id: string): Promise<{ exito: boolean; mensaje?: string }
     .delete()
     .eq('id', id);
 
-  if (error) return { exito: false, mensaje: error.message };
+  if (error) {
+    console.error(error.message);
+    return { exito: false, mensaje: 'No se pudo guardar en la base de datos.' };
+  }
   return { exito: true };
 }
 

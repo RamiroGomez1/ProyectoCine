@@ -6,7 +6,7 @@ import { PeliculasService } from '../../core/services/pelicula.service';
 import { ResenasService, ResenaItem } from '../../core/services/resenas.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { AuthService } from '../../core/services/auth.service';
-import { FavoritosService } from '../../core/services/favoritos.service';
+import { ModalService } from '../../core/services/modal.service';
 
 @Component({
   selector: 'app-movie-detail',
@@ -17,12 +17,12 @@ import { FavoritosService } from '../../core/services/favoritos.service';
 })
 export class MovieDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private modal = inject(ModalService);
   private router = inject(Router);
   private peliculaService = inject(PeliculasService);
   private resenasService = inject(ResenasService);
   private authService = inject(AuthService);
   private supabase = inject(SupabaseService).client;
-  private favoritosService = inject(FavoritosService); 
 
   pelicula = signal<any>(null);
   funciones = signal<any[]>([]);
@@ -35,7 +35,15 @@ export class MovieDetailComponent implements OnInit {
   enviandoResena = signal<boolean>(false);
 
   enPreventa = computed(() => {
-    return Boolean(this.pelicula()?.es_preventa);
+    return this.peliculaService.enPreventa(this.pelicula());
+  });
+
+  ventaAbierta = computed(() => {
+    return this.peliculaService.ventaAbierta(this.pelicula());
+  });
+
+  aperturaVenta = computed(() => {
+    return this.peliculaService.fechaAperturaVenta(this.pelicula());
   });
 
   async ngOnInit() {
@@ -45,16 +53,6 @@ export class MovieDetailComponent implements OnInit {
     }
   }
 
-  async agregarAFavoritos() {
-    const peli = this.pelicula();
-    if (!peli) return;
-
-    await this.favoritosService.agregarFavorito({
-      pelicula_id: peli.id,
-      nota: ''
-    });
-  }
-  
 async cargarPeliculaYResenas(id: string) {
   try {
     const [peliculaData, datosResenas] = await Promise.all([
@@ -83,6 +81,10 @@ async cargarPeliculaYResenas(id: string) {
   }
 }
 
+  precioFuncion(fun: any): number {
+    return this.peliculaService.precioEntrada(this.pelicula(), fun.precio);
+  }
+
   irASeleccionButacas(funcionId: string) {
     this.router.navigate(['/reserva', funcionId]);
   }
@@ -92,13 +94,13 @@ async cargarPeliculaYResenas(id: string) {
     const peli = this.pelicula();
 
     if (!user) {
-      alert('Debes iniciar sesión para dejar una reseña.');
+      this.modal.avisar('Debes iniciar sesión para dejar una reseña.');
       this.router.navigate(['/login']);
       return;
     }
 
     if (!this.nuevoComentario().trim()) {
-      alert('Por favor escribe un comentario.');
+      this.modal.avisar('Por favor escribe un comentario.');
       return;
     }
 
@@ -117,9 +119,10 @@ async cargarPeliculaYResenas(id: string) {
       const datosActualizados = await this.resenasService.obtenerResenasPorPelicula(peli.id);
       this.resenas.set(datosActualizados.resenas);
       this.promedioResenas.set(datosActualizados.promedio);
-      alert('¡Reseña publicada con éxito!');
+      this.modal.avisar('¡Reseña publicada con éxito!');
     } catch (err: any) {
-      alert(`Error al publicar reseña: ${err.message}`);
+      console.error(err);
+      this.modal.avisar('Error al publicar la reseña.');
     } finally {
       this.enviandoResena.set(false);
     }

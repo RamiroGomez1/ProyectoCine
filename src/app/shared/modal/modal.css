@@ -1,0 +1,52 @@
+.fondo-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.caja-modal {
+  background-color: #161625;
+  border: 1px solid #22223b;
+  border-top: 3px solid #e50914;
+  border-radius: 12px;
+  padding: 1.8rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.caja-modal p {
+  color: #ffffff;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.botones-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.botones-modal button {
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-aceptar {
+  background-color: #e50914;
+  color: #ffffff;
+}
+
+.btn-cancelar {
+  background-color: #22223b;
+  color: #b3b3b3;
+}
