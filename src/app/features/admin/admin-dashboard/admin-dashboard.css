@@ -192,6 +192,8 @@
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group input[type="datetime-local"],
+.form-group input[type="date"],
+.form-group input[type="time"],
 .form-group select,
 .form-group textarea {
   width: 100%;
@@ -278,4 +280,71 @@
 .check-item input[type="radio"] {
   accent-color: #e50914;
   cursor: pointer;
+}
+.bloque {
+  margin-bottom: 2.5rem;
+}
+
+.fila-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-tabla {
+  width: 90px;
+  padding: 0.4rem;
+  background-color: #12121e;
+  border: 1px solid #22223b;
+  color: #ffffff;
+  border-radius: 6px;
+}
+
+.btn-borrar, .btn-editar {
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #ffffff;
+  background-color: #e50914;
+  margin-left: 0.4rem;
+}
+
+.btn-editar {
+  background-color: #f39c12;
+}
+
+.barra-fila {
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+  color: #b3b3b3;
+}
+
+.barra {
+  background-color: #e50914;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  margin-top: 0.3rem;
+  min-width: 2rem;
+  box-sizing: border-box;
+  font-weight: bold;
+}
+
+.cambiar-portada img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cambiar-portada input {
+  display: none;
+}
+
+.tabla-scroll {
+  max-height: 380px;
+  overflow-y: auto;
 }

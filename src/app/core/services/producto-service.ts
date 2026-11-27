@@ -24,7 +24,7 @@ export class ProductoService {
       nombre: p.nombre,
       descripcion: p.descripcion,
       precio: Number(p.precio),
-      imagenUrl: p.imagen_url || 'https://images.unsplash.com/photo-1572177812156-58036aae439c?w=400',
+      imagenUrl: p.imagen_url || 'icons/sin-portada.svg',
       categoria: p.categoria,
       esCombo: Boolean(p.es_combo),
       costoEnPuntos: p.costo_en_puntos ?? 0

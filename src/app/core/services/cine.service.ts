@@ -1,86 +1,161 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 
+const MARGEN_MINUTOS = 30;
+
 @Injectable({
   providedIn: 'root'
 })
 export class CineService {
   private supabase = inject(SupabaseService).client;
 
-  async agregarFuncion(funcion: {
+  async obtenerSalas(): Promise<{ id: string; nombre: string }[]> {
+    const { data, error } = await this.supabase
+      .from('salas')
+      .select('*')
+      .order('nombre', { ascending: true });
+
+    if (error) {
+      console.error('Error al obtener salas:', error.message);
+      return [];
+    }
+    return data || [];
+  }
+
+  async agregarSala(nombre: string): Promise<{ exito: boolean; mensaje?: string }> {
+    const { error } = await this.supabase.from('salas').insert({ nombre: nombre.trim() });
+    if (error) return { exito: false, mensaje: error.message };
+    return { exito: true };
+  }
+
+  async eliminarSala(id: string): Promise<{ exito: boolean; mensaje?: string }> {
+    const { error } = await this.supabase.from('salas').delete().eq('id', id);
+    if (error) return { exito: false, mensaje: error.message };
+    return { exito: true };
+  }
+
+  // Recibe todas las fechas/horas que eligio el admin y a cada una le busca
+  // la primer sala libre (respetando los 30 min despues de la funcion anterior)
+  async programarFunciones(datos: {
     pelicula_id: string;
-    sala: string;
-    fecha_hora: string;
+    fechas: string[];
     precio: number;
     formato: string;
     idioma: string;
-  }): Promise<{ exito: boolean; mensaje?: string }> {
+  }): Promise<{ exito: boolean; mensaje?: string; creadas: { fecha: string; sala: string }[]; sinSala: string[] }> {
+    const resultado = { exito: false, mensaje: '', creadas: [] as { fecha: string; sala: string }[], sinSala: [] as string[] };
+
     try {
       const { data: pelicula, error: pelError } = await this.supabase
         .from('peliculas')
         .select('duracion_minutos')
-        .eq('id', funcion.pelicula_id)
+        .eq('id', datos.pelicula_id)
         .single();
 
       if (pelError || !pelicula) {
-        return { exito: false, mensaje: 'No se pudo obtener la duración de la película.' };
+        resultado.mensaje = 'No se pudo obtener la duración de la película.';
+        return resultado;
       }
 
-      const nuevaInicio = new Date(funcion.fecha_hora).getTime();
-      const duracionMs = (pelicula.duracion_minutos || 120) * 60000;
-      const margenMs = 30 * 60000; 
-      const nuevaFin = nuevaInicio + duracionMs + margenMs;
+      const salas = await this.obtenerSalas();
+      if (salas.length === 0) {
+        resultado.mensaje = 'No hay salas cargadas.';
+        return resultado;
+      }
 
-      const { data: funcionesSala, error: funError } = await this.supabase
+      const { data: existentes, error: funError } = await this.supabase
         .from('funciones')
-        .select('id, fecha_hora, pelicula_id')
-        .eq('sala', funcion.sala);
+        .select('sala, fecha_hora, peliculas(duracion_minutos)');
 
       if (funError) {
-        return { exito: false, mensaje: `Error consultando la sala: ${funError.message}` };
+        resultado.mensaje = `Error consultando las funciones: ${funError.message}`;
+        return resultado;
       }
 
-      if (funcionesSala && funcionesSala.length > 0) {
-        for (const f of funcionesSala) {
-          const { data: peliExistente } = await this.supabase
-            .from('peliculas')
-            .select('duracion_minutos')
-            .eq('id', f.pelicula_id)
-            .single();
+      // lista de horarios ocupados por sala (inicio y fin en ms)
+      const ocupados = (existentes || []).map((f: any) => {
+        const inicio = new Date(f.fecha_hora).getTime();
+        const duracion = f.peliculas?.duracion_minutos || 120;
+        return { sala: f.sala, inicio, fin: inicio + duracion * 60000 };
+      });
 
-          const fInicio = new Date(f.fecha_hora).getTime();
-          const fDuracionMs = ((peliExistente?.duracion_minutos || 120) + 30) * 60000;
-          const fFin = fInicio + fDuracionMs;
+      const duracionNueva = (pelicula.duracion_minutos || 120) * 60000;
+      const margen = MARGEN_MINUTOS * 60000;
+      const nuevas: any[] = [];
 
-          if (nuevaInicio < fFin && nuevaFin > fInicio) {
-            return {
-              exito: false,
-              mensaje: 'Conflicto de horario: Debe haber al menos 30 minutos libres respecto a otra función en la misma sala.'
-            };
-          }
+      for (const fecha of datos.fechas) {
+        const inicio = new Date(fecha).getTime();
+        const fin = inicio + duracionNueva;
+
+        const salaLibre = salas.find(s =>
+          !ocupados.some(o => o.sala === s.nombre && inicio < o.fin + margen && o.inicio < fin + margen)
+        );
+
+        if (!salaLibre) {
+          resultado.sinSala.push(fecha);
+          continue;
+        }
+
+        ocupados.push({ sala: salaLibre.nombre, inicio, fin });
+        resultado.creadas.push({ fecha, sala: salaLibre.nombre });
+        nuevas.push({
+          pelicula_id: datos.pelicula_id,
+          sala: salaLibre.nombre,
+          fecha_hora: fecha,
+          precio: datos.precio,
+          formato: datos.formato,
+          idioma: datos.idioma
+        });
+      }
+
+      if (nuevas.length > 0) {
+        const { error: insertError } = await this.supabase.from('funciones').insert(nuevas);
+        if (insertError) {
+          resultado.mensaje = insertError.message;
+          resultado.creadas = [];
+          return resultado;
         }
       }
 
-      const { error: insertError } = await this.supabase
-        .from('funciones')
-        .insert([
-          {
-            pelicula_id: funcion.pelicula_id,
-            sala: funcion.sala,
-            fecha_hora: funcion.fecha_hora,
-            precio: funcion.precio,
-            formato: funcion.formato,
-            idioma: funcion.idioma
-          }
-        ]);
-
-      if (insertError) {
-        return { exito: false, mensaje: insertError.message };
-      }
-
-      return { exito: true };
+      resultado.exito = true;
+      return resultado;
     } catch (err: any) {
-      return { exito: false, mensaje: err.message || 'Error inesperado al programar función.' };
+      resultado.mensaje = err.message || 'Error inesperado al programar función.';
+      return resultado;
     }
+  }
+
+  // funciones que todavia no pasaron, para mostrarlas en el admin
+  async obtenerFuncionesProgramadas() {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const { data, error } = await this.supabase
+      .from('funciones')
+      .select('*, peliculas(titulo)')
+      .gte('fecha_hora', hoy.toISOString())
+      .order('fecha_hora', { ascending: true });
+
+    if (error) {
+      console.error('Error al obtener funciones:', error.message);
+      return [];
+    }
+    return data || [];
+  }
+
+  async eliminarFuncion(id: string): Promise<{ exito: boolean; mensaje?: string }> {
+    const { count } = await this.supabase
+      .from('reservas')
+      .select('id', { count: 'exact', head: true })
+      .eq('funcion_id', id)
+      .in('estado', ['confirmada', 'usada']);
+
+    if ((count || 0) > 0) {
+      return { exito: false, mensaje: 'No se puede borrar una función que ya tiene entradas vendidas.' };
+    }
+
+    const { error } = await this.supabase.from('funciones').delete().eq('id', id);
+    if (error) return { exito: false, mensaje: error.message };
+    return { exito: true };
   }
 }

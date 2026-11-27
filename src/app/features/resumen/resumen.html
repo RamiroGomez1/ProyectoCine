@@ -15,7 +15,7 @@
       style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
       <button type="button" class="btn-coupon"
         style="background-color: #27ae60;" (click)="descargarTicketPDF()">
-        📥 Descargar Entrada (PDF)
+        Descargar Entrada (PDF)
       </button>
       <a routerLink="/home" class="btn-back"
         style="margin-bottom: 0; align-self: center;">Volver a Cartelera</a>
@@ -35,11 +35,28 @@
   </div>
   }
 
+  @if (tieneVip()) {
+  <div class="alerta-info">
+    Atención: estás comprando butacas VIP (filas R, S y T), que tienen un precio más alto.
+  </div>
+  }
+
   <div class="carrito-items">
-    @for (item of carritoService.items(); track item.id) {
+    @for (item of carritoService.items(); track claveItem(item)) {
     <div class="item">
-      <span>{{ item.cantidad }}x {{ item.nombre }}</span>
-      <span>${{ item.precio * item.cantidad }}</span>
+      <span>
+        {{ item.cantidad }}x {{ item.nombre }}
+        @if (incluidaEnCombo(item)) {
+        <small class="tag-item">incluida en el combo</small>
+        }
+        @if (puedeCanjear(item)) {
+        <label class="canje-check">
+          <input type="checkbox" [checked]="estaCanjeado(item)" (change)="alternarCanje(item)">
+          Canjear por {{ puntosItem(item) }} pts
+        </label>
+        }
+      </span>
+      <span>${{ precioItem(item) }}</span>
     </div>
     }
   </div>
@@ -71,31 +88,25 @@
   </div>
   }
 
-  @if (puntosDisponibles() > 0) {
-  <div class="cupon-section"
-    style="display: flex; align-items: center; justify-content: space-between;">
-    <div>
-      <strong>Tenés {{ puntosDisponibles() }} puntos de fidelidad</strong>
-      <p style="margin: 0; font-size: 0.85rem; color: #8c8c9e;">
-        Equivalen a ${{ puntosDisponibles() * VALOR_PUNTO }} de descuento.
-      </p>
-    </div>
-    <label
-      style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-      <input type="checkbox" [checked]="usarPuntos()"
-        (change)="usarPuntos.set(!usarPuntos())">
-      <span>Canjear puntos</span>
-    </label>
+  @if (authService.currentUser()) {
+  <p style="font-size: 0.9rem; color: #8c8c9e;">
+    Tenés {{ puntosDisponibles() }} puntos. Usados en esta compra: {{ puntosUsados() }}
+  </p>
+  }
+
+  @if (totalPagar() > 0) {
+  <div class="cupon-section">
+    <strong>Método de pago</strong>
+    <select [ngModel]="metodoPago()" (ngModelChange)="metodoPago.set($event)">
+      @for (m of metodosPago; track m) {
+      <option [value]="m">{{ m }}</option>
+      }
+    </select>
   </div>
   }
 
-  @if (descuentoPuntos() > 0) {
-  <p class="descuento" style="color: #e67e22;">Puntos canjeados: -${{
-    descuentoPuntos() }}</p>
-  }
-
   <div class="totales">
-    <p>Subtotal: ${{ carritoService.total() }}</p>
+    <p>Subtotal: ${{ subtotal() }}</p>
     @if (descuentoAplicado() > 0) {
     <p class="descuento">Cupón de descuento: -${{ descuentoAplicado() }}</p>
     }
@@ -108,7 +119,7 @@
 
   <button
     class="btn-comprar"
-    [disabled]="!puedeComprar() || cargandoPago() || carritoService.items().length === 0"
+    [disabled]="!puedeComprar() || cargandoPago() || carritoService.items().length === 0 || !reservaData()"
     (click)="confirmarCompra()">
     {{ cargandoPago() ? 'Generando Ticket...' : 'Confirmar Compra y Generar QR'
     }}

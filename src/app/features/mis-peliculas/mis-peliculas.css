@@ -1,11 +1,11 @@
-.favoritos-container {
+.mis-peliculas-container {
   padding: 2.5rem;
   max-width: 1200px;
   margin: 0 auto;
   color: #ffffff;
 }
 
-.favoritos-container h2 {
+.mis-peliculas-container h2 {
   color: #ffffff;
   margin-bottom: 1.5rem;
   font-size: 2rem;
@@ -19,13 +19,13 @@
   font-size: 1.1rem;
 }
 
-.favoritos-grid {
+.mis-peliculas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
 }
 
-.favorito-card {
+.pelicula-vista {
   display: flex;
   gap: 1rem;
   background: #161625;
@@ -55,7 +55,7 @@
   color: #ffffff;
 }
 
-.genero {
+.fecha {
   color: #b3b3b3;
   font-size: 0.85rem;
   margin: 0 0 0.5rem 0;
@@ -91,15 +91,7 @@ button:hover {
   opacity: 0.9;
 }
 
-.btn-edit {
-  background-color: #f39c12;
-  color: white;
-}
 
-.btn-delete {
-  background-color: #e50914; 
-  color: white;
-}
 
 .btn-save {
   background-color: #27ae60;
@@ -151,4 +143,9 @@ button:hover {
 
 .estrellas-row select:focus {
   border-color: #e50914;
+}
+.estrellas {
+  color: #f1c40f;
+  font-size: 1rem;
+  letter-spacing: 2px;
 }

@@ -16,12 +16,14 @@ export class AuthService {
     this.initAuthSession();
   }
 
+  private sesionCargada: Promise<void> | null = null;
+
   private initAuthSession() {
-    this.supabase.auth.getSession().then(({ data: { session } }) => {
+    this.sesionCargada = this.supabase.auth.getSession().then(async ({ data: { session } }) => {
       this.currentSession.set(session);
       this.currentUser.set(session?.user ?? null);
       if (session?.user) {
-        this.cargarDatosUsuario(session.user.id);
+        await this.cargarDatosUsuario(session.user.id);
       }
     });
 
@@ -34,6 +36,11 @@ export class AuthService {
         this.currentUserData.set(null);
       }
     });
+  }
+
+  // los guards esperan a que termine de cargar la sesion (si no al recargar la pagina te saca)
+  async esperarSesion() {
+    await this.sesionCargada;
   }
 
   async cargarDatosUsuario(userId: string) {

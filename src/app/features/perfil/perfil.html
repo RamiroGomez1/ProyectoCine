@@ -2,7 +2,7 @@
   <div class="perfil-header">
     <a routerLink="/home" class="btn-back">⬅ Volver a Cartelera</a>
     <div class="header-titles">
-      <h2>👤 Mi Perfil</h2>
+      <h2>Mi Perfil</h2>
       <p class="subtitle">Gestiona tu información personal y revisa tus beneficios de cine.</p>
     </div>
   </div>
@@ -149,6 +149,66 @@
         </div>
 
       </form>
+    </div>
+
+
+    <div class="perfil-card">
+      <h3>Mis compras</h3>
+      <table class="tabla-perfil">
+        <thead>
+          <tr>
+            <th>Película</th>
+            <th>Función</th>
+            <th>Butacas</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (compra of compras(); track compra.id) {
+            <tr>
+              <td>{{ compra.funciones?.peliculas?.titulo }}</td>
+              <td>{{ compra.funciones?.fecha_hora | date:'dd/MM HH:mm' }}</td>
+              <td>{{ compra.asientos?.join(', ') }}</td>
+              <td>${{ compra.total_pagar }}</td>
+              <td>{{ compra.estado }}</td>
+              <td>
+                @if (sePuedeCancelar(compra)) {
+                  <button type="button" class="btn-cancelar" (click)="cancelarCompra(compra)">Cancelar</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6">Todavía no hiciste compras.</td></tr>
+          }
+        </tbody>
+      </table>
+      <small>Podés cancelar hasta 2 horas antes de la función. No se devuelve dinero, se acredita como saldo a favor.</small>
+    </div>
+
+    <div class="perfil-card">
+      <h3>Historial de canjes</h3>
+      <table class="tabla-perfil">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Canje</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (canje of canjes(); track canje.id) {
+            <tr>
+              <td>{{ canje.fecha | date:'dd/MM/yyyy' }}</td>
+              <td>{{ canje.descripcion }}</td>
+              <td>-{{ canje.puntos }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3">Todavía no canjeaste puntos.</td></tr>
+          }
+        </tbody>
+      </table>
     </div>
 
   }

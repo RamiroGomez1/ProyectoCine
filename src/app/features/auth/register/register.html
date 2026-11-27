@@ -77,6 +77,36 @@
         }
       </div>
 
+      <div class="form-group">
+        <label for="fechaNacimiento">Fecha de nacimiento</label>
+        <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento">
+        @if (registerForm.controls.fechaNacimiento.invalid && registerForm.controls.fechaNacimiento.touched) {
+          <small style="color: #e74c3c; display: block; text-align: left; margin-top: 0.3rem; font-size: 0.8rem;">
+            La fecha de nacimiento es obligatoria.
+          </small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="tipoSangre">Tipo de sangre</label>
+        <select id="tipoSangre" formControlName="tipoSangre">
+          <option value="" disabled>Elegí una opción</option>
+          @for (tipo of tiposSangre; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="colorOjos">Color de ojos</label>
+        <input id="colorOjos" type="text" formControlName="colorOjos" placeholder="Ej: Marrones">
+      </div>
+
+      <div class="form-group">
+        <label for="diasVacaciones">Días de vacaciones por año</label>
+        <input id="diasVacaciones" type="number" formControlName="diasVacaciones" min="0" max="365">
+      </div>
+
       <button type="submit" class="btn-submit" [disabled]="registerForm.invalid || isLoading()">
         @if (isLoading()) {
           Registrando...

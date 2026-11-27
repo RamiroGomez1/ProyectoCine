@@ -45,7 +45,7 @@ label {
   margin-bottom: 0.4rem;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 0.9rem;
   border-radius: 8px;
@@ -58,7 +58,7 @@ input {
   transition: border-color 0.2s ease;
 }
 
-input:focus {
+input:focus, select:focus {
   border-color: #e50914;
 }
 

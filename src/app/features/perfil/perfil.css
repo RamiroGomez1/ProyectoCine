@@ -209,3 +209,37 @@
   color: #6c6c80;
   cursor: not-allowed;
 }
+.perfil-card + .perfil-card {
+  margin-top: 1.5rem;
+}
+
+.perfil-card small {
+  color: #8c8c9e;
+}
+
+.tabla-perfil {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.tabla-perfil th,
+.tabla-perfil td {
+  text-align: left;
+  padding: 0.6rem;
+  border-bottom: 1px solid #22223b;
+}
+
+.tabla-perfil th {
+  color: #8c8c9e;
+}
+
+.btn-cancelar {
+  background-color: #e50914;
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}

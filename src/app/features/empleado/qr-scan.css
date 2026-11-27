@@ -75,3 +75,53 @@
   border: 1px solid rgba(229, 9, 20, 0.3);
   color: #e50914;
 }
+.modo-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modo-group button {
+  flex: 1;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #22223b;
+  background-color: #161625;
+  color: #b3b3b3;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modo-group button.activo {
+  background-color: #e50914;
+  border-color: #e50914;
+  color: #ffffff;
+}
+
+.detalle-reserva {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #161625;
+  border-radius: 8px;
+  border: 1px solid #22223b;
+}
+
+.camara {
+  width: 100%;
+  max-height: 320px;
+  border-radius: 8px;
+  background-color: #000000;
+  object-fit: cover;
+}
+
+.btn-camara {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0 1rem 0;
+  border-radius: 8px;
+  border: none;
+  background-color: #00b894;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+}

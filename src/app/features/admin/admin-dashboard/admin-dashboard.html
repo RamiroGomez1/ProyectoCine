@@ -1,117 +1,125 @@
 <div class="admin-container">
-  <h1>
-    @if (authService.currentUserData()?.rol === 'admin') {
-      Panel de Control Administrativo
-    } @else {
-      Panel de Gestión Operativa 
-    }
-  </h1>
+  <h1>Panel de Control Administrativo</h1>
 
   @if (cargando()) {
     <p>Cargando panel y métricas del sistema...</p>
   } @else {
     <div class="metricas-grid">
 
-      @if (authService.currentUserData()?.rol === 'admin') {
-        <section class="card">
-          <h2>Registrar Nueva Película</h2>
-          <form [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()">
+      <section class="card">
+        <h2>Registrar Nueva Película</h2>
+        <form [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()">
 
-            <div class="form-group">
-              <label>Título *</label>
-              <input type="text" formControlName="titulo" placeholder="Ej: Oppenheimer">
+          <div class="form-group">
+            <label>Título *</label>
+            <input type="text" formControlName="titulo" placeholder="Ej: Oppenheimer">
+          </div>
+
+          <div class="form-group">
+            <label>Sinopsis *</label>
+            <textarea formControlName="sinopsis" rows="2" placeholder="Resumen..."></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Duración (min) *</label>
+              <input type="number" formControlName="duracionMinutos" min="1">
             </div>
-
-            <div class="form-group">
-              <label>Sinopsis *</label>
-              <textarea formControlName="sinopsis" rows="2" placeholder="Resumen..."></textarea>
+            <div class="form-group half">
+              <label>Precio Base ($) *</label>
+              <input type="number" formControlName="precioBase" min="0">
             </div>
+          </div>
 
-            <div class="form-row">
-              <div class="form-group half">
-                <label>Duración (min) *</label>
-                <input type="number" formControlName="duracionMinutos" min="1">
-              </div>
-              <div class="form-group half">
-                <label>Precio Base ($) *</label>
-                <input type="number" formControlName="precioBase" min="0">
-              </div>
+          <div class="form-group">
+            <label>Formatos permitidos para esta película *</label>
+            <div class="checklist-grid">
+              @for (fmt of formatosDisponibles; track fmt) {
+                <label class="check-item">
+                  <input
+                    type="checkbox"
+                    [checked]="formatosSeleccionadosPelicula().includes(fmt)"
+                    (change)="toggleFormatoPelicula(fmt)">
+                  <span>{{ fmt }}</span>
+                </label>
+              }
             </div>
+          </div>
 
-            <div class="form-group">
-              <label>Formatos permitidos para esta película *</label>
-              <div class="checklist-grid">
-                @for (fmt of formatosDisponibles; track fmt) {
-                  <label class="check-item">
-                    <input
-                      type="checkbox"
-                      [checked]="formatosSeleccionadosPelicula().includes(fmt)"
-                      (change)="toggleFormatoPelicula(fmt)">
-                    <span>{{ fmt }}</span>
-                  </label>
-                }
-              </div>
+          <div class="form-group">
+            <label>Idiomas permitidos para esta película *</label>
+            <div class="checklist-grid">
+              @for (idioma of idiomasDisponibles; track idioma) {
+                <label class="check-item">
+                  <input
+                    type="checkbox"
+                    [checked]="idiomasSeleccionadosPelicula().includes(idioma)"
+                    (change)="toggleIdiomaPelicula(idioma)">
+                  <span>{{ idioma }}</span>
+                </label>
+              }
             </div>
+          </div>
 
-            <div class="form-group">
-              <label>Idiomas permitidos para esta película *</label>
-              <div class="checklist-grid">
-                @for (idioma of idiomasDisponibles; track idioma) {
-                  <label class="check-item">
-                    <input
-                      type="checkbox"
-                      [checked]="idiomasSeleccionadosPelicula().includes(idioma)"
-                      (change)="toggleIdiomaPelicula(idioma)">
-                    <span>{{ idioma }}</span>
-                  </label>
-                }
-              </div>
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Clasificación *</label>
+              <select formControlName="clasificacionEdad">
+                <option [value]="0">ATP</option>
+                <option [value]="13">+13</option>
+                <option [value]="18">+18</option>
+              </select>
             </div>
-
-            <div class="form-row">
-              <div class="form-group half">
-                <label>Clasificación *</label>
-                <select formControlName="clasificacionEdad">
-                  <option [value]="0">ATP</option>
-                  <option [value]="13">+13</option>
-                  <option [value]="16">+16</option>
-                  <option [value]="18">+18</option>
-                </select>
-              </div>
-              <div class="form-group half">
-                <label>Géneros *</label>
-                <select multiple formControlName="generos" class="multi-select">
-                  <option value="Acción">Acción</option>
-                  <option value="Aventura">Aventura</option>
-                  <option value="Ciencia Ficción">Ciencia Ficción</option>
-                  <option value="Comedia">Comedia</option>
-                  <option value="Drama">Drama</option>
-                  <option value="Terror">Terror</option>
-                </select>
-              </div>
+            <div class="form-group half">
+              <label>Géneros * (Ctrl + clic para elegir varios)</label>
+              <select multiple formControlName="generos" class="multi-select">
+                <option value="Acción">Acción</option>
+                <option value="Aventura">Aventura</option>
+                <option value="Animación">Animación</option>
+                <option value="Ciencia Ficción">Ciencia Ficción</option>
+                <option value="Comedia">Comedia</option>
+                <option value="Drama">Drama</option>
+                <option value="Romance">Romance</option>
+                <option value="Suspenso">Suspenso</option>
+                <option value="Terror">Terror</option>
+              </select>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label>Portada (Archivo)</label>
-              <input type="file" accept="image/*" (change)="onPeliculaFileSelected($event)">
-            </div>
+          <div class="form-group">
+            <label>Portada (archivo o URL de la imagen)</label>
+            <input type="file" accept="image/*" (change)="onPeliculaFileSelected($event)">
+            <input type="text" formControlName="portadaUrl" placeholder="https://..." style="margin-top: 0.5rem;">
+          </div>
 
-            <div class="form-group checkbox-group">
+          <div class="form-group">
+            <label>Fecha de estreno (vacío si ya está en cartel)</label>
+            <input type="date" formControlName="fechaEstreno">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half checkbox-group">
               <label>
                 <input type="checkbox" formControlName="esPreventa">
-                ¿Habilitar en Preventa?
+                Preventa (7 días antes del estreno)
               </label>
             </div>
+            @if (peliculaForm.controls.esPreventa.value) {
+              <div class="form-group half">
+                <label>Precio Preventa ($)</label>
+                <input type="number" formControlName="precioPreventa" min="0">
+              </div>
+            }
+          </div>
 
-            <button type="submit" [disabled]="peliculaForm.invalid" class="btn-pdf btn-full">
-              Registrar Película
-            </button>
-          </form>
-        </section>
-      }
+          <button type="submit" [disabled]="peliculaForm.invalid" class="btn-pdf btn-full">
+            Registrar Película
+          </button>
+        </form>
+      </section>
 
-      <section class="card" [style.grid-column]="authService.currentUserData()?.rol === 'admin' ? 'auto' : '1 / -1'">
-        <h2>Programar Función</h2>
+      <section class="card">
+        <h2>Programar Funciones</h2>
         <form [formGroup]="funcionForm" (ngSubmit)="programarFuncion()">
 
           <div class="form-group">
@@ -125,13 +133,31 @@
           </div>
 
           <div class="form-group">
-            <label>Sala *</label>
-            <select formControlName="sala">
-              <option value="Sala 1">Sala 1</option>
-              <option value="Sala 2">Sala 2</option>
-              <option value="Sala 3">Sala 3</option>
-              <option value="Sala IMAX">Sala IMAX</option>
-            </select>
+            <label>Días de la semana *</label>
+            <div class="checklist-grid">
+              @for (dia of diasSemana; track dia; let i = $index) {
+                <label class="check-item">
+                  <input type="checkbox" [checked]="diasSeleccionados().includes(i)" (change)="toggleDia(i)">
+                  <span>{{ dia }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Desde *</label>
+              <input type="date" formControlName="fechaDesde" [min]="fechaMinima">
+            </div>
+            <div class="form-group half">
+              <label>Hasta *</label>
+              <input type="date" formControlName="fechaHasta" [min]="fechaMinima">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Hora *</label>
+            <input type="time" formControlName="hora" step="900">
           </div>
 
           <div class="form-row">
@@ -162,11 +188,6 @@
             @if (descuentoFuncion() > 0) {
               <small class="tag-rebaja">(-{{ descuentoFuncion() }}% aplicado)</small>
             }
-          </div>
-
-          <div class="form-group">
-            <label>Fecha y Hora *</label>
-            <input type="datetime-local" formControlName="fechaHoraInicio" [min]="fechaMinima">
           </div>
 
           <div class="form-group">
@@ -202,100 +223,313 @@
           </div>
 
           <div class="notice-box">
-            Validación: Al menos 30 min libres en la sala elegida.
+            La sala se asigna sola: se usa la primera sala libre, dejando 30 min después de la función anterior.
           </div>
 
           <button type="submit" [disabled]="funcionForm.invalid" class="btn-excel btn-full">
-            Programar Función
+            Programar Funciones
           </button>
         </form>
       </section>
 
     </div>
 
-    @if (authService.currentUserData()?.rol === 'admin') {
-      <section class="acciones-section">
-        <h2>Reportes de Facturación</h2>
-        <button (click)="exportarPDF()" class="btn-pdf">Exportar a PDF</button>
-        <button (click)="exportarExcel()" class="btn-excel">Exportar a Excel</button>
-      </section>
-
-      <div class="metricas-grid">
-        <section class="card">
-          <h2>Top 5 Películas</h2>
-          <ul>
-            @for (peli of topPeliculas(); track peli.nombre) {
-              <li><strong>{{ peli.nombre }}</strong>: {{ peli.entradas_vendidas }} entradas</li>
-            }
-          </ul>
-        </section>
-
-        <section class="card highlight">
-          <h2>Producto Candy Más Vendido</h2>
-          @if (topCandy()) {
-            <div class="candy-stats">
-              <h3>{{ topCandy().nombre }}</h3>
-              <p>{{ topCandy().cantidad_vendida }} unidades vendidas</p>
-            </div>
-          }
-        </section>
-      </div>
-
-      <section class="log-section">
-        <h2>Log de Actividad del Sistema</h2>
+    <section class="card bloque">
+      <h2>Funciones Programadas</h2>
+      <div class="tabla-scroll">
         <table class="log-table">
           <thead>
             <tr>
-              <th>Fecha y Hora</th>
-              <th>Usuario</th>
-              <th>Acción</th>
-              <th>Detalle</th>
+              <th>Película</th>
+              <th>Sala</th>
+              <th>Fecha y hora</th>
+              <th>Formato</th>
+              <th>Precio</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            @for (log of logs(); track log.id) {
+            @for (fun of funciones(); track fun.id) {
               <tr>
-                <td>{{ log.fecha_hora | date:'short' }}</td>
-                <td>{{ log.perfiles?.nombre }} {{ log.perfiles?.apellido }}</td>
-                <td><span class="badge">{{ log.tipo_accion }}</span></td>
-                <td>{{ log.detalle }}</td>
+                <td>{{ fun.peliculas?.titulo }}</td>
+                <td>{{ fun.sala }}</td>
+                <td>{{ fun.fecha_hora | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ fun.formato }} - {{ fun.idioma }}</td>
+                <td>${{ fun.precio }}</td>
+                <td><button type="button" class="btn-borrar" (click)="eliminarFuncion(fun)">Borrar</button></td>
               </tr>
             } @empty {
-              <tr><td colspan="4">No hay actividad registrada.</td></tr>
+              <tr><td colspan="6">No hay funciones programadas.</td></tr>
             }
           </tbody>
         </table>
-      </section>
-    }
+      </div>
+    </section>
 
-    <section class="card" style="grid-column: 1 / -1; margin-top: 1.5rem;">
-      <h2>Inventario de Candy Bar</h2>
+    <section class="card bloque">
+      <h2>Cartelera</h2>
       <table class="log-table">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Precio</th>
-            <th>Puntos</th>
-            <th>Acciones</th>
+            <th>Portada</th>
+            <th>Película</th>
+            <th>Estreno</th>
+            <th>Precio base</th>
+            <th>En cartelera</th>
           </tr>
         </thead>
         <tbody>
-          @for (prod of listaProductosCandy(); track prod.id) {
+          @for (peli of listaPeliculas(); track peli.id) {
             <tr>
-              <td>{{ prod.nombre }}</td>
-              <td>{{ prod.categoria }}</td>
-              <td>${{ prod.precio }}</td>
-              <td>{{ prod.costoEnPuntos }} pts</td>
               <td>
-                <button type="button" (click)="editarProducto(prod)" class="btn-coupon">Editar</button>
-                <button type="button" (click)="eliminarProductoCandy(prod.id)" style="background:#e50914; color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:4px; margin-left:0.5rem; cursor:pointer;">Borrar</button>
+                <label class="cambiar-portada">
+                  <img [src]="peli.portada_url || 'icons/sin-portada.svg'" [alt]="peli.titulo">
+                  <input type="file" accept="image/*" (change)="cambiarPortada(peli, $event)">
+                </label>
               </td>
+              <td>{{ peli.titulo }}</td>
+              <td>{{ peli.fecha_estreno ? (peli.fecha_estreno + 'T00:00:00' | date:'dd/MM/yyyy') : '-' }}</td>
+              <td><input type="number" class="input-tabla" [value]="peli.precio_base" (change)="cambiarPrecioPelicula(peli, $event)"></td>
+              <td><input type="checkbox" [checked]="peli.visible !== false" (change)="cambiarVisibilidad(peli)"></td>
             </tr>
           }
         </tbody>
       </table>
     </section>
 
+    <div class="metricas-grid">
+      <section class="card">
+        <h2>Salas</h2>
+        <ul>
+          @for (sala of salas(); track sala.id) {
+            <li class="fila-lista">
+              <strong>{{ sala.nombre }}</strong>
+              <button type="button" class="btn-borrar" (click)="eliminarSala(sala)">Borrar</button>
+            </li>
+          }
+        </ul>
+        <form [formGroup]="salaForm" (ngSubmit)="agregarSala()" class="form-row">
+          <div class="form-group half">
+            <input type="text" formControlName="nombre" placeholder="Nombre de la sala">
+          </div>
+          <button type="submit" class="btn-excel" [disabled]="salaForm.invalid">Agregar</button>
+        </form>
+        <small class="help-text">Todas las salas tienen 20 filas (A a T), con la fila accesible J-K y las filas VIP R, S y T.</small>
+      </section>
+
+      <section class="card">
+        <h2>Cupones</h2>
+        <ul>
+          @for (cupon of cupones(); track cupon.id) {
+            <li class="fila-lista">
+              <span>
+                <strong>{{ cupon.codigo }}</strong>
+                {{ cupon.tipo === 'primera_compra' ? '(primera compra)' : '(mayores de 50)' }}
+              </span>
+              <span>
+                <input type="number" class="input-tabla" min="1" max="100" [value]="cupon.porcentaje" (change)="cambiarPorcentajeCupon(cupon, $event)"> %
+                @if (cupon.tipo === 'mayores_50') {
+                  <button type="button" class="btn-borrar" (click)="eliminarCupon(cupon)">Borrar</button>
+                }
+              </span>
+            </li>
+          }
+        </ul>
+        <form [formGroup]="cuponForm" (ngSubmit)="crearCupon()" class="form-row">
+          <div class="form-group half">
+            <input type="text" formControlName="codigo" placeholder="Código (mayores de 50)">
+          </div>
+          <div class="form-group half">
+            <input type="number" formControlName="porcentaje" min="1" max="100">
+          </div>
+          <button type="submit" class="btn-excel" [disabled]="cuponForm.invalid">Crear</button>
+        </form>
+
+        <h2>Puntos</h2>
+        <div class="form-group">
+          <label>Puntos que cuesta una entrada gratis</label>
+          <input type="number" min="1" [value]="puntosEntrada()" (change)="guardarPuntosEntrada($event)">
+          <small class="help-text">Los puntos de cada producto del candy se configuran en el producto.</small>
+        </div>
+      </section>
+    </div>
+
+    <div class="metricas-grid">
+      <section class="card">
+        <h2>{{ productoEnEdicionId() ? 'Editar Producto' : 'Nuevo Producto / Combo' }}</h2>
+        <form [formGroup]="candyForm" (ngSubmit)="guardarProductoCandy()">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" formControlName="nombre">
+          </div>
+          <div class="form-group">
+            <label>Descripción *</label>
+            <input type="text" formControlName="descripcion" placeholder="Ej: Entrada + pochoclo grande + gaseosa">
+          </div>
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Precio ($) *</label>
+              <input type="number" formControlName="precio" min="0">
+            </div>
+            <div class="form-group half">
+              <label>Costo en puntos *</label>
+              <input type="number" formControlName="costoEnPuntos" min="0">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group half">
+              <label>Categoría *</label>
+              <select formControlName="categoria">
+                <option value="Combos">Combos</option>
+                <option value="Pochoclos">Pochoclos</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Golosinas">Golosinas</option>
+              </select>
+            </div>
+            <div class="form-group half checkbox-group">
+              <label>
+                <input type="checkbox" formControlName="esCombo">
+                Es combo (incluye entrada)
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>URL de la imagen</label>
+            <input type="text" formControlName="imagenUrl">
+          </div>
+          <button type="submit" class="btn-excel btn-full" [disabled]="candyForm.invalid">
+            {{ productoEnEdicionId() ? 'Guardar Cambios' : 'Crear Producto' }}
+          </button>
+          @if (productoEnEdicionId()) {
+            <button type="button" class="btn-pdf btn-full" (click)="cancelarEdicion()">Cancelar</button>
+          }
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Inventario de Candy Bar</h2>
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Puntos</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (prod of listaProductosCandy(); track prod.id) {
+              <tr>
+                <td>{{ prod.nombre }}</td>
+                <td>{{ prod.esCombo ? 'Combo' : prod.categoria }}</td>
+                <td>${{ prod.precio }}</td>
+                <td>{{ prod.costoEnPuntos }} pts</td>
+                <td>
+                  <button type="button" (click)="editarProducto(prod)" class="btn-editar">Editar</button>
+                  <button type="button" (click)="eliminarProductoCandy(prod.id)" class="btn-borrar">Borrar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="acciones-section">
+      <h2>Reportes de Facturación</h2>
+      <button (click)="exportarPDF()" class="btn-pdf">Exportar a PDF</button>
+      <button (click)="exportarExcel()" class="btn-excel">Exportar a Excel</button>
+    </section>
+
+    <div class="metricas-grid">
+      <section class="card">
+        <h2>Facturación por día</h2>
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Entradas</th>
+              <th>Facturado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of facturacionDiaria(); track fila.fecha) {
+              <tr>
+                <td>{{ fila.fecha }}</td>
+                <td>{{ fila.entradas }}</td>
+                <td>${{ fila.total }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3">Todavía no hay ventas.</td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card highlight">
+        <h2>Producto Candy Más Vendido</h2>
+        @if (topCandy(); as candy) {
+          <div class="candy-stats">
+            <h3>{{ candy.nombre }}</h3>
+            <p>{{ candy.cantidad_vendida }} unidades vendidas</p>
+          </div>
+        } @else {
+          <p>Todavía no se vendieron productos.</p>
+        }
+      </section>
+    </div>
+
+    <div class="metricas-grid">
+      <section class="card">
+        <h2>Más vistas de la semana</h2>
+        @for (peli of topSemana(); track peli.nombre) {
+          <div class="barra-fila">
+            <span>{{ peli.nombre }}</span>
+            <div class="barra" [style.width.%]="anchoBarra(peli.entradas, topSemana())">{{ peli.entradas }}</div>
+          </div>
+        } @empty {
+          <p>Sin ventas en los últimos 7 días.</p>
+        }
+      </section>
+
+      <section class="card">
+        <h2>Más vistas del mes</h2>
+        @for (peli of topMes(); track peli.nombre) {
+          <div class="barra-fila">
+            <span>{{ peli.nombre }}</span>
+            <div class="barra" [style.width.%]="anchoBarra(peli.entradas, topMes())">{{ peli.entradas }}</div>
+          </div>
+        } @empty {
+          <p>Sin ventas en los últimos 30 días.</p>
+        }
+      </section>
+    </div>
+
+    <section class="log-section">
+      <h2>Log de Actividad del Sistema</h2>
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log.id) {
+            <tr>
+              <td>{{ log.fecha_hora | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ log.usuario?.nombre }} {{ log.usuario?.apellido }}</td>
+              <td><span class="badge">{{ log.tipo_accion }}</span></td>
+              <td>{{ log.detalle }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4">No hay actividad registrada.</td></tr>
+          }
+        </tbody>
+      </table>
+    </section>
   }
 </div>

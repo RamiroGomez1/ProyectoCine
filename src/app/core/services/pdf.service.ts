@@ -10,6 +10,7 @@ export interface DatosTicketPDF {
   total: number;
   qrCodigo: string;
   itemsCandy?: { nombre: string; cantidad: number }[];
+  requiereAdulto?: boolean;
 }
 
 @Injectable({
@@ -59,6 +60,14 @@ export class PdfService {
     doc.text(`Ubicación: ${datos.asientos.join(', ') || 'Sin asignar'}`, 10, 56);
 
     let yOffset = 64;
+
+    if (datos.requiereAdulto) {
+      doc.setTextColor(241, 196, 15);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Debe ingresar acompañado de un adulto.', 10, 62);
+      doc.setFont('helvetica', 'normal');
+      yOffset = 70;
+    }
     doc.setDrawColor(34, 34, 59);
     doc.line(10, yOffset - 3, 95, yOffset - 3);
 

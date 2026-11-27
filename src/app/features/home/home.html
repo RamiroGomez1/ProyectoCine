@@ -3,6 +3,16 @@
   <div class="loading-state">Cargando cartelera...</div>
   } @else {
 
+  <section class="hero-banner">
+    <h1>PROYECTO CINE</h1>
+    <p>Elegí tu película, tu butaca y tus pochoclos. Retirás todo con un solo QR.</p>
+    <a routerLink="/proximamente" class="btn-secondary">Ver próximos estrenos</a>
+  </section>
+
+  @for (aviso of avisos(); track aviso) {
+  <div class="aviso-alerta">{{ aviso }}</div>
+  }
+
   @if (top3Vendidas().length > 0) {
   <section class="top3-section">
     <h2>Top 3 Películas Más Vendidas</h2>
@@ -11,7 +21,7 @@
       @for (peli of top3Vendidas(); track peli.id) {
       <div class="movie-card highlight-card">
         <img
-          [src]="peli.portada_url || 'https://via.placeholder.com/300x450?text=Sin+Portada'"
+          [src]="peli.portada_url || 'icons/sin-portada.svg'"
           [alt]="peli.titulo">
         <div class="card-content">
           <h3>{{ peli.titulo }}</h3>
@@ -34,10 +44,19 @@
     <div class="search-bar">
       <input
         type="text"
-        placeholder="Buscar por género (ej. Acción, Comedia, Terror...)"
+        placeholder="Buscar película por nombre..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        class="search-input">
+      <select
         [ngModel]="filtroGenero()"
         (ngModelChange)="filtroGenero.set($event)"
         class="search-input">
+        <option value="">Todos los géneros</option>
+        @for (g of generos(); track g) {
+        <option [value]="g">{{ g }}</option>
+        }
+      </select>
     </div>
   </section>
 
@@ -46,7 +65,7 @@
       @for (peli of peliculasFiltradas(); track peli.id) {
       <div class="movie-card">
         <img
-          [src]="peli.portada_url || 'https://via.placeholder.com/300x450?text=Sin+Portada'"
+          [src]="peli.portada_url || 'icons/sin-portada.svg'"
           [alt]="peli.titulo">
         <div class="card-content">
           <h3>{{ peli.titulo }}</h3>
@@ -59,8 +78,7 @@
       </div>
       } @empty {
       <div class="empty-state">
-        <p>No se encontraron películas para el género
-          "{{ filtroGenero() }}".</p>
+        <p>No se encontraron películas con esa búsqueda.</p>
       </div>
       }
     </div>

@@ -26,18 +26,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/movie-detail/movie-detail').then(m => m.MovieDetailComponent)
   },
   {
-    path: 'favoritos',
-    loadComponent: () => import('./features/favoritos/favoritos').then(m => m.FavoritosComponent),
+    path: 'mis-peliculas',
+    loadComponent: () => import('./features/mis-peliculas/mis-peliculas').then(m => m.MisPeliculasComponent),
     canActivate: [authGuard]
   },
   {
     path: 'admin',
     loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard').then(m => m.AdminDashboardComponent),
-    canActivate: [authEmpleadoGuard]
-  },
-  {
-    path: 'admin/agregar-pelicula',
-    loadComponent: () => import('./features/agregar-pelicula/agregar-pelicula').then(m => m.AgregarPeliculaComponent),
     canActivate: [authAdminGuard]
   },
   {
@@ -50,7 +45,8 @@ export const routes: Routes = [
   },
   {
     path: 'perfil',
-    loadComponent: () => import('./features/perfil/perfil').then(m => m.PerfilComponent)
+    loadComponent: () => import('./features/perfil/perfil').then(m => m.PerfilComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'resumen',

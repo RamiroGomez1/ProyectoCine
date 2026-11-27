@@ -10,7 +10,7 @@
 
     @if (authService.currentUser()) {
     <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
-    <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
+    <a routerLink="/mis-peliculas" routerLinkActive="active">Mis Películas</a>
 
     @if (authService.currentUserData()?.rol === 'empleado' ||
     authService.currentUserData()?.rol === 'admin') {
@@ -20,10 +20,9 @@
     </a>
     }
 
-    @if (authService.currentUserData()?.rol === 'admin' ||
-    authService.currentUserData()?.rol === 'empleado') {
+    @if (authService.currentUserData()?.rol === 'admin') {
     <a routerLink="/admin" routerLinkActive="active" class="admin-badge">
-      Panel Gestión
+      Panel Admin
     </a>
     }
 

@@ -4,25 +4,32 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { Usuario } from '../../core/models/usuario.interface';
-import { UpperCasePipe } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
+import { FidelizacionService } from '../../core/services/fidelizacion.service';
+import { ModalService } from '../../core/services/modal.service';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe],
+  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, DatePipe],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css'
 })
 export class PerfilComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private modal = inject(ModalService);
   private authService = inject(AuthService);
   private supabase = inject(SupabaseService).client;
+  private fidelizacionService = inject(FidelizacionService);
 
   usuario = signal<Usuario | null>(null);
   cargando = signal(true);
   guardando = signal(false);
   mensajeExito = signal<string | null>(null);
   mensajeError = signal<string | null>(null);
+
+  compras = signal<any[]>([]);
+  canjes = signal<any[]>([]);
 
   tiposSangreDisponibles = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', '0+', '0-'];
 
@@ -37,6 +44,45 @@ export class PerfilComponent implements OnInit {
 
   async ngOnInit() {
     await this.cargarDatosPerfil();
+    await this.cargarComprasYCanjes();
+  }
+
+  async cargarComprasYCanjes() {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    const { data } = await this.supabase
+      .from('reservas')
+      .select('id, estado, total_pagar, asientos, fecha_compra, funciones(fecha_hora, peliculas(titulo))')
+      .eq('usuario_id', user.id)
+      .in('estado', ['confirmada', 'usada', 'cancelada'])
+      .order('fecha_compra', { ascending: false });
+
+    this.compras.set(data || []);
+    this.canjes.set(await this.fidelizacionService.obtenerCanjes(user.id));
+  }
+
+  // se puede cancelar hasta 2 horas antes de la funcion
+  sePuedeCancelar(compra: any): boolean {
+    if (compra.estado !== 'confirmada' || !compra.funciones) return false;
+    const horaFuncion = new Date(compra.funciones.fecha_hora).getTime();
+    return horaFuncion - Date.now() >= 2 * 60 * 60 * 1000;
+  }
+
+  async cancelarCompra(compra: any) {
+    const user = this.authService.currentUser();
+    if (!user) return;
+    if (!(await this.modal.confirmar(`¿Cancelar la compra? Se te van a acreditar $${compra.total_pagar} de saldo a favor.`))) return;
+
+    try {
+      await this.fidelizacionService.cancelarReservaYOtrogarCredito(compra.id, user.id);
+      this.mensajeExito.set('Compra cancelada. El crédito ya está en tu cuenta.');
+      await this.authService.cargarDatosUsuario(user.id);
+      await this.cargarDatosPerfil();
+      await this.cargarComprasYCanjes();
+    } catch (err: any) {
+      this.mensajeError.set(err.message);
+    }
   }
 
   async cargarDatosPerfil() {

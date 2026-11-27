@@ -47,6 +47,10 @@ export class FidelizacionService {
       throw new Error('Esta reserva ya se encuentra cancelada.');
     }
 
+    if (reserva.estado === 'usada') {
+      throw new Error('No se puede cancelar una entrada que ya fue usada.');
+    }
+
     const fechaHoraFuncion = (reserva as any).funciones?.fecha_hora;
     if (!fechaHoraFuncion) {
       throw new Error('No se pudo verificar el horario de la función.');
@@ -121,4 +125,49 @@ export class FidelizacionService {
   }
 }
 
+  async obtenerPuntosEntrada(): Promise<number> {
+    const { data } = await this.supabase
+      .from('configuracion')
+      .select('valor')
+      .eq('clave', 'puntos_entrada')
+      .maybeSingle();
+
+    return Number(data?.valor ?? 500);
+  }
+
+  async guardarPuntosEntrada(puntos: number): Promise<boolean> {
+    const { error } = await this.supabase
+      .from('configuracion')
+      .upsert({ clave: 'puntos_entrada', valor: puntos });
+
+    if (error) {
+      console.error('Error al guardar puntos de la entrada:', error.message);
+      return false;
+    }
+    return true;
+  }
+
+  async registrarCanje(userId: string, descripcion: string, puntos: number) {
+    const { error } = await this.supabase
+      .from('canjes')
+      .insert({ usuario_id: userId, descripcion, puntos });
+
+    if (error) {
+      console.error('Error al registrar canje:', error.message);
+    }
+  }
+
+  async obtenerCanjes(userId: string) {
+    const { data, error } = await this.supabase
+      .from('canjes')
+      .select('*')
+      .eq('usuario_id', userId)
+      .order('fecha', { ascending: false });
+
+    if (error) {
+      console.error('Error al obtener canjes:', error.message);
+      return [];
+    }
+    return data || [];
+  }
 }
